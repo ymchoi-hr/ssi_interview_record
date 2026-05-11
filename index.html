@@ -447,87 +447,236 @@
     .pdf-sheet {
       width: 794px;
       min-height: 1123px;
-      padding: 34px 36px;
-      background: white;
+      padding: 0;
+      background: #ffffff;
       color: #111827;
       font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
     }
 
+    .pdf-brandbar {
+      background: linear-gradient(135deg, var(--brand-dark) 0%, #314454 55%, var(--brand) 100%);
+      color: #ffffff;
+      padding: 26px 34px 24px;
+    }
+
+    .pdf-brand-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+    }
+
+    .pdf-brand-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.18);
+      margin-bottom: 12px;
+    }
+
     .pdf-title {
-      text-align: center;
       font-size: 28px;
       font-weight: 900;
-      margin-bottom: 22px;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+      margin: 0 0 8px;
+    }
+
+    .pdf-subtitle {
+      font-size: 13px;
+      line-height: 1.65;
+      color: rgba(255,255,255,0.86);
+      max-width: 520px;
+    }
+
+    .pdf-brand-side {
+      min-width: 160px;
+      text-align: right;
+      font-size: 12px;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.7;
+    }
+
+    .pdf-content {
+      padding: 28px 34px 32px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfefe 100%);
+    }
+
+    .pdf-highlight-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .pdf-highlight-card {
+      border: 1px solid #d8e5e3;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #ffffff 0%, #f8fcfc 100%);
+      padding: 14px 16px;
+    }
+
+    .pdf-highlight-card .caption {
+      font-size: 11px;
+      color: #5f6e78;
+      font-weight: 800;
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    .pdf-highlight-card .value {
+      font-size: 15px;
+      font-weight: 800;
       color: var(--brand-dark);
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .pdf-highlight-card.score {
+      background: linear-gradient(135deg, rgba(0, 191, 182, 0.1) 0%, rgba(39, 54, 70, 0.06) 100%);
+      border-color: rgba(0, 191, 182, 0.22);
+    }
+
+    .pdf-highlight-card.score .value {
+      font-size: 34px;
+      letter-spacing: -0.03em;
     }
 
     .pdf-meta {
       width: 100%;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0;
       margin-bottom: 18px;
       font-size: 13px;
+      border: 1px solid #c7d7d4;
+      border-radius: 16px;
+      overflow: hidden;
     }
 
     .pdf-meta th,
     .pdf-meta td,
     .pdf-score th,
     .pdf-score td {
-      border: 1px solid #9ca3af;
-      padding: 8px 10px;
+      border-right: 1px solid #c7d7d4;
+      border-bottom: 1px solid #c7d7d4;
+      padding: 10px 12px;
       vertical-align: top;
     }
 
+    .pdf-meta tr:last-child th,
+    .pdf-meta tr:last-child td,
+    .pdf-score tr:last-child th,
+    .pdf-score tr:last-child td {
+      border-bottom: none;
+    }
+
+    .pdf-meta th:last-child,
+    .pdf-meta td:last-child,
+    .pdf-score th:last-child,
+    .pdf-score td:last-child {
+      border-right: none;
+    }
+
     .pdf-meta th {
-      width: 110px;
+      width: 118px;
       background: #eef8f7;
       text-align: left;
       color: var(--brand-dark);
+      font-weight: 800;
     }
 
     .pdf-section {
-      margin-top: 16px;
-      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 18px;
+      margin-bottom: 10px;
       font-size: 15px;
       font-weight: 900;
+      color: var(--brand-dark);
+      letter-spacing: -0.02em;
+    }
+
+    .pdf-section::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, var(--brand) 0%, var(--brand-dark) 100%);
+      flex: 0 0 10px;
     }
 
     .pdf-score {
       width: 100%;
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0;
       font-size: 12px;
       table-layout: fixed;
       margin-bottom: 14px;
+      border: 1px solid #c7d7d4;
+      border-radius: 16px;
+      overflow: hidden;
     }
 
     .pdf-score th {
       background: #eef8f7;
       color: var(--brand-dark);
+      font-weight: 800;
+    }
+
+    .pdf-score td {
+      background: #ffffff;
     }
 
     .pdf-box {
-      border: 1px solid #9ca3af;
-      min-height: 120px;
-      padding: 12px;
+      border: 1px solid #c7d7d4;
+      border-radius: 16px;
+      min-height: 110px;
+      padding: 14px 16px;
       font-size: 13px;
-      line-height: 1.7;
+      line-height: 1.75;
       white-space: pre-wrap;
       word-break: break-word;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfefe 100%);
+    }
+
+    .pdf-box--decision {
+      min-height: auto;
+      background: linear-gradient(135deg, rgba(0, 191, 182, 0.12) 0%, rgba(39, 54, 70, 0.06) 100%);
+      border-color: rgba(0, 191, 182, 0.22);
+      color: var(--brand-dark);
+      font-weight: 900;
+      font-size: 18px;
+      text-align: center;
+      padding: 16px;
     }
 
     .pdf-footer {
       display: flex;
       justify-content: space-between;
       gap: 16px;
-      margin-top: 18px;
-      font-size: 13px;
-      color: #374151;
+      margin-top: 20px;
+      padding-top: 14px;
+      border-top: 1px solid #d8e5e3;
+      font-size: 12px;
+      color: #4f5d67;
+      line-height: 1.7;
     }
 
     .pdf-decision {
       font-size: 16px;
       font-weight: 900;
-      color: #111827;
+      color: var(--brand-dark);
+    }
+
+    .pdf-footer strong {
+      color: var(--brand-dark);
     }
 
     .muted {
@@ -961,57 +1110,85 @@
       const average = calculateAverage();
       const rows = scoreFields.map(({ key, label }) => `
         <tr>
-          <td style="width: 120px; font-weight: 700;">${label}</td>
-          <td style="width: 70px; text-align: center;">${escapeHtml(data[key] || '-')}</td>
+          <td style="width: 120px; font-weight: 800; color: var(--brand-dark);">${label}</td>
+          <td style="width: 70px; text-align: center; font-weight: 800; color: var(--brand-dark);">${escapeHtml(data[key] || '-')}</td>
           <td>${escapeHtml(data[`${key}Comment`] || '') || '-'}</td>
         </tr>
       `).join('');
 
       return `
-        <div class="pdf-title">면접 평가표</div>
-
-        <table class="pdf-meta">
-          <tr>
-            <th>계열사명</th><td>${escapeHtml(data.affiliateName)}</td>
-            <th>면접관명</th><td>${escapeHtml(data.interviewerName)}</td>
-          </tr>
-          <tr>
-            <th>지원자명</th><td>${escapeHtml(data.candidateName)}</td>
-            <th>신입 / 경력</th><td>${escapeHtml(data.careerType)}</td>
-          </tr>
-          <tr>
-            <th>지원부서(팀) / 직무</th><td>${escapeHtml(data.targetDeptJob)}</td>
-            <th>면접일자</th><td>${escapeHtml(data.interviewDate || '-')}</td>
-          </tr>
-        </table>
-
-        <div class="pdf-section">1. 항목별 평가</div>
-        <table class="pdf-score">
-          <thead>
-            <tr>
-              <th style="width: 120px;">평가 항목</th>
-              <th style="width: 70px;">점수</th>
-              <th>평가 의견</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-
-        <div class="pdf-section">2. 주요 강점</div>
-        <div class="pdf-box">${escapeHtml(data.strengths || '-')}</div>
-
-        <div class="pdf-section">3. 우려 사항 / 추가 확인 사항</div>
-        <div class="pdf-box">${escapeHtml(data.concerns || '-')}</div>
-
-        <div class="pdf-section">4. 종합 평가</div>
-        <div class="pdf-box">${escapeHtml(data.overallComment || '-')}</div>
-
-        <div class="pdf-footer">
-          <div>
-            <div><strong>평균 점수:</strong> ${average ? average.toFixed(1) : '0.0'} / 5.0</div>
-            <div style="margin-top: 6px;"><strong>계열사 / 면접관:</strong> ${escapeHtml(data.affiliateName)} / ${escapeHtml(data.interviewerName)}</div>
+        <div class="pdf-brandbar">
+          <div class="pdf-brand-row">
+            <div>
+              <div class="pdf-brand-mark">SANGSANGIN GROUP</div>
+              <div class="pdf-title">상상인그룹 인터뷰 평가 기록</div>
+              <div class="pdf-subtitle">면접관이 기록한 인터뷰 평가 내용을 상상인그룹 브랜드 톤의 문서 형식으로 정리한 개인 보관용 PDF입니다.</div>
+            </div>
+            <div class="pdf-brand-side">
+              <div><strong>문서일자</strong></div>
+              <div>${escapeHtml(data.interviewDate || '-')}</div>
+            </div>
           </div>
-          <div class="pdf-decision">최종 의견: ${escapeHtml(getDecisionBadge(data.decision))}</div>
+        </div>
+
+        <div class="pdf-content">
+          <div class="pdf-highlight-grid">
+            <div class="pdf-highlight-card">
+              <div class="caption">지원자 / 지원부서(팀) · 직무</div>
+              <div class="value">${escapeHtml(data.candidateName)} / ${escapeHtml(data.targetDeptJob)}</div>
+            </div>
+            <div class="pdf-highlight-card score">
+              <div class="caption">평균 점수</div>
+              <div class="value">${average ? average.toFixed(1) : '0.0'}<span style="font-size: 16px; font-weight: 800;"> / 5.0</span></div>
+            </div>
+          </div>
+
+          <table class="pdf-meta">
+            <tr>
+              <th>계열사명</th><td>${escapeHtml(data.affiliateName)}</td>
+              <th>면접관명</th><td>${escapeHtml(data.interviewerName)}</td>
+            </tr>
+            <tr>
+              <th>지원자명</th><td>${escapeHtml(data.candidateName)}</td>
+              <th>신입 / 경력</th><td>${escapeHtml(data.careerType)}</td>
+            </tr>
+            <tr>
+              <th>지원부서(팀) / 직무</th><td>${escapeHtml(data.targetDeptJob)}</td>
+              <th>면접일자</th><td>${escapeHtml(data.interviewDate || '-')}</td>
+            </tr>
+          </table>
+
+          <div class="pdf-section">1. 항목별 평가</div>
+          <table class="pdf-score">
+            <thead>
+              <tr>
+                <th style="width: 120px;">평가 항목</th>
+                <th style="width: 70px;">점수</th>
+                <th>평가 의견</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+
+          <div class="pdf-section">2. 주요 강점</div>
+          <div class="pdf-box">${escapeHtml(data.strengths || '-')}</div>
+
+          <div class="pdf-section">3. 우려 사항 / 추가 확인 사항</div>
+          <div class="pdf-box">${escapeHtml(data.concerns || '-')}</div>
+
+          <div class="pdf-section">4. 종합 평가</div>
+          <div class="pdf-box">${escapeHtml(data.overallComment || '-')}</div>
+
+          <div class="pdf-section">5. 최종 의견</div>
+          <div class="pdf-box pdf-box--decision">${escapeHtml(getDecisionBadge(data.decision))}</div>
+
+          <div class="pdf-footer">
+            <div>
+              <div><strong>계열사 / 면접관</strong> ${escapeHtml(data.affiliateName)} / ${escapeHtml(data.interviewerName)}</div>
+              <div><strong>지원자</strong> ${escapeHtml(data.candidateName)}</div>
+            </div>
+            <div class="pdf-decision">인터뷰 평가 기록</div>
+          </div>
         </div>
       `;
     }
