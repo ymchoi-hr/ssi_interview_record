@@ -497,43 +497,34 @@
           <h3 class="section-title">기본 정보</h3>
           <div class="grid-2">
             <div class="field">
+              <label for="affiliateName">계열사명</label>
+              <input id="affiliateName" name="affiliateName" type="text" placeholder="예: ABC계열사" />
+            </div>
+            <div class="field">
               <label for="interviewerName">면접관명</label>
               <input id="interviewerName" name="interviewerName" type="text" placeholder="예: 홍길동" />
-            </div>
-            <div class="field">
-              <label for="candidateName">지원자명</label>
-              <input id="candidateName" name="candidateName" type="text" placeholder="예: 김지원" />
-            </div>
-          </div>
-
-          <div class="grid-3">
-            <div class="field">
-              <label for="position">지원 직무</label>
-              <input id="position" name="position" type="text" placeholder="예: 프론트엔드 개발자" />
-            </div>
-            <div class="field">
-              <label for="interviewDate">면접일</label>
-              <input id="interviewDate" name="interviewDate" type="date" />
-            </div>
-            <div class="field">
-              <label for="interviewTime">면접 시간</label>
-              <input id="interviewTime" name="interviewTime" type="time" />
             </div>
           </div>
 
           <div class="grid-2">
             <div class="field">
-              <label for="department">평가 부서 / 면접 구분</label>
-              <input id="department" name="department" type="text" placeholder="예: 개발실 / 1차 실무면접" />
+              <label for="candidateName">지원자명</label>
+              <input id="candidateName" name="candidateName" type="text" placeholder="예: 김지원" />
             </div>
             <div class="field">
-              <label for="interviewType">면접 유형</label>
-              <select id="interviewType" name="interviewType">
-                <option value="대면">대면</option>
-                <option value="비대면">비대면</option>
-                <option value="전화">전화</option>
-                <option value="기타">기타</option>
-              </select>
+              <label for="targetDeptJob">지원부서(팀) / 직무</label>
+              <input id="targetDeptJob" name="targetDeptJob" type="text" placeholder="예: 플랫폼개발팀 / 프론트엔드 개발자" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label for="interviewDate">면접일자</label>
+              <input id="interviewDate" name="interviewDate" type="date" />
+            </div>
+            <div class="field">
+              <label for="careerType">신입 / 경력</label>
+              <input id="careerType" name="careerType" type="text" placeholder="예: 신입 또는 경력 5년" />
             </div>
           </div>
 
@@ -682,15 +673,15 @@
           <div class="section-title" style="margin-bottom: 14px;">입력 요약</div>
           <div class="summary-list">
             <div class="summary-item">
-              <div class="label">면접관</div>
+              <div class="label">계열사 / 면접관</div>
               <div id="summaryInterviewer" class="value">-</div>
             </div>
             <div class="summary-item">
-              <div class="label">지원자 / 직무</div>
+              <div class="label">지원자 / 지원부서·직무</div>
               <div id="summaryCandidate" class="value">-</div>
             </div>
             <div class="summary-item">
-              <div class="label">면접 일정</div>
+              <div class="label">면접일자 / 신입·경력</div>
               <div id="summarySchedule" class="value">-</div>
             </div>
             <div class="summary-item">
@@ -728,8 +719,8 @@
     ];
 
     const formIds = [
-      'interviewerName', 'candidateName', 'position', 'interviewDate', 'interviewTime',
-      'department', 'interviewType', 'strengths', 'concerns', 'overallComment'
+      'affiliateName', 'interviewerName', 'candidateName', 'targetDeptJob', 'interviewDate',
+      'careerType', 'strengths', 'concerns', 'overallComment'
     ];
 
     function pad(value) {
@@ -803,12 +794,10 @@
       const avg = calculateAverage();
 
       document.getElementById('averageScore').textContent = avg ? avg.toFixed(1) : '0.0';
-      document.getElementById('summaryInterviewer').textContent = emptyToDash(data.interviewerName);
-      document.getElementById('summaryCandidate').textContent = `${emptyToDash(data.candidateName)} / ${emptyToDash(data.position)}`;
+      document.getElementById('summaryInterviewer').textContent = `${emptyToDash(data.affiliateName)} / ${emptyToDash(data.interviewerName)}`;
+      document.getElementById('summaryCandidate').textContent = `${emptyToDash(data.candidateName)} / ${emptyToDash(data.targetDeptJob)}`;
 
-      const dateText = data.interviewDate || '';
-      const timeText = data.interviewTime || '';
-      const schedule = [dateText, timeText].filter(Boolean).join(' ');
+      const schedule = [data.interviewDate || '', data.careerType || ''].filter(Boolean).join(' / ');
       document.getElementById('summarySchedule').textContent = emptyToDash(schedule);
       document.getElementById('summaryDecision').textContent = emptyToDash(data.decision);
     }
@@ -848,9 +837,7 @@
       formIds.forEach((id) => {
         const element = document.getElementById(id);
         if (!element) return;
-        if (id === 'interviewType') {
-          element.value = '대면';
-        } else if (id === 'interviewDate') {
+        if (id === 'interviewDate') {
           element.value = todayDateString();
         } else {
           element.value = '';
@@ -886,10 +873,12 @@
     }
 
     function validateRequired(data) {
+      if (!data.affiliateName) return '계열사명을 입력해 주세요.';
       if (!data.interviewerName) return '면접관명을 입력해 주세요.';
       if (!data.candidateName) return '지원자명을 입력해 주세요.';
-      if (!data.position) return '지원 직무를 입력해 주세요.';
-      if (!data.interviewDate) return '면접일을 선택해 주세요.';
+      if (!data.targetDeptJob) return '지원부서(팀) / 직무를 입력해 주세요.';
+      if (!data.interviewDate) return '면접일자를 선택해 주세요.';
+      if (!data.careerType) return '신입 / 경력 구분을 입력해 주세요.';
       if (!data.decision) return '최종 의견을 선택해 주세요.';
       return '';
     }
@@ -909,16 +898,16 @@
 
         <table class="pdf-meta">
           <tr>
+            <th>계열사명</th><td>${escapeHtml(data.affiliateName)}</td>
             <th>면접관명</th><td>${escapeHtml(data.interviewerName)}</td>
+          </tr>
+          <tr>
             <th>지원자명</th><td>${escapeHtml(data.candidateName)}</td>
+            <th>신입 / 경력</th><td>${escapeHtml(data.careerType)}</td>
           </tr>
           <tr>
-            <th>지원 직무</th><td>${escapeHtml(data.position)}</td>
-            <th>면접 유형</th><td>${escapeHtml(data.interviewType || '-')}</td>
-          </tr>
-          <tr>
-            <th>면접 일정</th><td>${escapeHtml([data.interviewDate, data.interviewTime].filter(Boolean).join(' ')) || '-'}</td>
-            <th>평가 부서</th><td>${escapeHtml(data.department || '-')}</td>
+            <th>지원부서(팀) / 직무</th><td>${escapeHtml(data.targetDeptJob)}</td>
+            <th>면접일자</th><td>${escapeHtml(data.interviewDate || '-')}</td>
           </tr>
         </table>
 
@@ -946,7 +935,7 @@
         <div class="pdf-footer">
           <div>
             <div><strong>평균 점수:</strong> ${average ? average.toFixed(1) : '0.0'} / 5.0</div>
-            <div style="margin-top: 6px;"><strong>면접관:</strong> ${escapeHtml(data.interviewerName)}</div>
+            <div style="margin-top: 6px;"><strong>계열사 / 면접관:</strong> ${escapeHtml(data.affiliateName)} / ${escapeHtml(data.interviewerName)}</div>
           </div>
           <div class="pdf-decision">최종 의견: ${escapeHtml(getDecisionBadge(data.decision))}</div>
         </div>
