@@ -1,0 +1,1064 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>면접 평가표</title>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --panel: #ffffff;
+      --line: #d8e0ea;
+      --line-strong: #aebdce;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --brand: #2563eb;
+      --brand-dark: #1d4ed8;
+      --good: #16a34a;
+      --warn: #ca8a04;
+      --bad: #dc2626;
+      --shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 280px);
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 32px));
+      margin: 28px auto 60px;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 45%, #60a5fa 100%);
+      color: white;
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 32px;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255,255,255,0.92);
+      line-height: 1.6;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid rgba(174, 189, 206, 0.35);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 20px 22px 8px;
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .panel-header p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .panel-body {
+      padding: 20px 22px 24px;
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .grid-2, .grid-3 {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    input:focus, textarea:focus, select:focus {
+      border-color: #7aa6ff;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    }
+
+    textarea { min-height: 92px; resize: vertical; }
+
+    .score-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+
+    .score-table th,
+    .score-table td {
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      padding: 10px;
+      vertical-align: top;
+      background: #fff;
+    }
+
+    .score-table tr:last-child td { border-bottom: none; }
+    .score-table th:last-child, .score-table td:last-child { border-right: none; }
+
+    .score-table thead th {
+      background: #eff6ff;
+      font-size: 13px;
+      color: #1e3a8a;
+      text-align: center;
+      font-weight: 800;
+    }
+
+    .score-table .col-item { width: 24%; }
+    .score-table .col-score { width: 15%; }
+    .score-table .col-comment { width: 61%; }
+
+    .item-name {
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: #111827;
+    }
+
+    .item-guide {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .score-select,
+    .score-comment {
+      width: 100%;
+      font-size: 14px;
+    }
+
+    .score-comment {
+      min-height: 72px;
+    }
+
+    .decision-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .decision-option {
+      flex: 1 1 0;
+      min-width: 120px;
+      position: relative;
+    }
+
+    .decision-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .decision-option label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: #fff;
+      cursor: pointer;
+      font-weight: 800;
+      transition: all .2s ease;
+    }
+
+    .decision-option.pass input:checked + label {
+      background: rgba(22, 163, 74, 0.09);
+      color: var(--good);
+      border-color: rgba(22, 163, 74, 0.45);
+    }
+
+    .decision-option.hold input:checked + label {
+      background: rgba(202, 138, 4, 0.1);
+      color: var(--warn);
+      border-color: rgba(202, 138, 4, 0.45);
+    }
+
+    .decision-option.fail input:checked + label {
+      background: rgba(220, 38, 38, 0.09);
+      color: var(--bad);
+      border-color: rgba(220, 38, 38, 0.4);
+    }
+
+    .sticky-box {
+      position: sticky;
+      top: 18px;
+      display: grid;
+      gap: 18px;
+    }
+
+    .stat-card {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      border: 1px solid rgba(174, 189, 206, 0.35);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 36px;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
+
+    .stat-sub {
+      color: #475569;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .summary-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .summary-item {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      background: #fff;
+    }
+
+    .summary-item .label {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .summary-item .value {
+      font-size: 15px;
+      font-weight: 800;
+      color: #111827;
+      word-break: break-word;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button {
+      appearance: none;
+      border: none;
+      cursor: pointer;
+      border-radius: 12px;
+      padding: 13px 18px;
+      font-size: 14px;
+      font-weight: 800;
+      transition: transform .05s ease, background .2s ease, opacity .2s ease;
+    }
+
+    button:active { transform: translateY(1px); }
+
+    .btn-primary {
+      background: var(--brand);
+      color: white;
+      flex: 1 1 220px;
+    }
+
+    .btn-primary:hover { background: var(--brand-dark); }
+
+    .btn-secondary {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      flex: 1 1 140px;
+    }
+
+    .btn-ghost {
+      background: #fff;
+      color: #475569;
+      border: 1px solid var(--line);
+      flex: 1 1 140px;
+    }
+
+    .save-note {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .status {
+      margin-top: 12px;
+      min-height: 20px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .status.ok { color: var(--good); }
+    .status.error { color: var(--bad); }
+
+    .pdf-stage {
+      position: fixed;
+      left: -99999px;
+      top: 0;
+      width: 860px;
+      background: white;
+      z-index: -1;
+    }
+
+    .pdf-sheet {
+      width: 794px;
+      min-height: 1123px;
+      padding: 34px 36px;
+      background: white;
+      color: #111827;
+      font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+    }
+
+    .pdf-title {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 900;
+      margin-bottom: 22px;
+      letter-spacing: -0.02em;
+    }
+
+    .pdf-meta {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 18px;
+      font-size: 13px;
+    }
+
+    .pdf-meta th,
+    .pdf-meta td,
+    .pdf-score th,
+    .pdf-score td {
+      border: 1px solid #9ca3af;
+      padding: 8px 10px;
+      vertical-align: top;
+    }
+
+    .pdf-meta th {
+      width: 110px;
+      background: #f3f4f6;
+      text-align: left;
+    }
+
+    .pdf-section {
+      margin-top: 16px;
+      margin-bottom: 8px;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .pdf-score {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      table-layout: fixed;
+      margin-bottom: 14px;
+    }
+
+    .pdf-score th {
+      background: #eff6ff;
+    }
+
+    .pdf-box {
+      border: 1px solid #9ca3af;
+      min-height: 120px;
+      padding: 12px;
+      font-size: 13px;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .pdf-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-top: 18px;
+      font-size: 13px;
+      color: #374151;
+    }
+
+    .pdf-decision {
+      font-size: 16px;
+      font-weight: 900;
+      color: #111827;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+      .sticky-box { position: static; }
+    }
+
+    @media (max-width: 700px) {
+      .container { width: min(100% - 20px, 100%); margin-top: 12px; }
+      .hero { padding: 22px; border-radius: 18px; }
+      .hero h1 { font-size: 26px; }
+      .panel-body, .panel-header { padding-left: 16px; padding-right: 16px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .score-table { display: block; overflow-x: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>면접 평가표</h1>
+      <p>
+        면접관이 각자 평가 내용을 입력한 뒤 <strong>저장 및 PDF 다운로드</strong> 버튼을 누르면,
+        브라우저에서 PDF 파일이 생성되어 해당 PC로 자동 다운로드됩니다.
+      </p>
+    </section>
+
+    <div class="layout">
+      <section class="panel">
+        <div class="panel-header">
+          <h2>평가 입력</h2>
+          <p>작성 중인 내용은 브라우저에 자동 임시 저장됩니다. 같은 브라우저에서 다시 접속하면 이전 입력값을 이어서 볼 수 있습니다.</p>
+        </div>
+        <div class="panel-body">
+          <h3 class="section-title">기본 정보</h3>
+          <div class="grid-2">
+            <div class="field">
+              <label for="interviewerName">면접관명</label>
+              <input id="interviewerName" name="interviewerName" type="text" placeholder="예: 홍길동" />
+            </div>
+            <div class="field">
+              <label for="candidateName">지원자명</label>
+              <input id="candidateName" name="candidateName" type="text" placeholder="예: 김지원" />
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <div class="field">
+              <label for="position">지원 직무</label>
+              <input id="position" name="position" type="text" placeholder="예: 프론트엔드 개발자" />
+            </div>
+            <div class="field">
+              <label for="interviewDate">면접일</label>
+              <input id="interviewDate" name="interviewDate" type="date" />
+            </div>
+            <div class="field">
+              <label for="interviewTime">면접 시간</label>
+              <input id="interviewTime" name="interviewTime" type="time" />
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label for="department">평가 부서 / 면접 구분</label>
+              <input id="department" name="department" type="text" placeholder="예: 개발실 / 1차 실무면접" />
+            </div>
+            <div class="field">
+              <label for="interviewType">면접 유형</label>
+              <select id="interviewType" name="interviewType">
+                <option value="대면">대면</option>
+                <option value="비대면">비대면</option>
+                <option value="전화">전화</option>
+                <option value="기타">기타</option>
+              </select>
+            </div>
+          </div>
+
+          <h3 class="section-title">항목별 평가</h3>
+          <table class="score-table">
+            <thead>
+              <tr>
+                <th class="col-item">평가 항목</th>
+                <th class="col-score">점수</th>
+                <th class="col-comment">평가 의견</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="item-name">직무 역량</div>
+                  <div class="item-guide">직무 이해도, 기술 수준, 실무 적용 가능성</div>
+                </td>
+                <td>
+                  <select class="score-select" data-score="jobSkill" title="직무 역량 점수">
+                    <option value="">선택</option>
+                    <option value="1">1점</option>
+                    <option value="2">2점</option>
+                    <option value="3">3점</option>
+                    <option value="4">4점</option>
+                    <option value="5">5점</option>
+                  </select>
+                </td>
+                <td><textarea class="score-comment" data-comment="jobSkillComment" placeholder="직무 관련 강점, 보완점 등을 입력하세요."></textarea></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="item-name">커뮤니케이션</div>
+                  <div class="item-guide">의사 전달력, 질문 이해도, 대화 태도</div>
+                </td>
+                <td>
+                  <select class="score-select" data-score="communication" title="커뮤니케이션 점수">
+                    <option value="">선택</option>
+                    <option value="1">1점</option>
+                    <option value="2">2점</option>
+                    <option value="3">3점</option>
+                    <option value="4">4점</option>
+                    <option value="5">5점</option>
+                  </select>
+                </td>
+                <td><textarea class="score-comment" data-comment="communicationComment" placeholder="답변 전달력, 경청 태도 등을 입력하세요."></textarea></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="item-name">문제 해결</div>
+                  <div class="item-guide">상황 분석력, 논리성, 문제 접근 방식</div>
+                </td>
+                <td>
+                  <select class="score-select" data-score="problemSolving" title="문제 해결 점수">
+                    <option value="">선택</option>
+                    <option value="1">1점</option>
+                    <option value="2">2점</option>
+                    <option value="3">3점</option>
+                    <option value="4">4점</option>
+                    <option value="5">5점</option>
+                  </select>
+                </td>
+                <td><textarea class="score-comment" data-comment="problemSolvingComment" placeholder="문제 해결 방식과 사례를 입력하세요."></textarea></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="item-name">협업 태도</div>
+                  <div class="item-guide">협업 경험, 피드백 수용성, 조직 내 상호작용</div>
+                </td>
+                <td>
+                  <select class="score-select" data-score="teamwork" title="협업 태도 점수">
+                    <option value="">선택</option>
+                    <option value="1">1점</option>
+                    <option value="2">2점</option>
+                    <option value="3">3점</option>
+                    <option value="4">4점</option>
+                    <option value="5">5점</option>
+                  </select>
+                </td>
+                <td><textarea class="score-comment" data-comment="teamworkComment" placeholder="협업 자세, 팀 적응 가능성 등을 입력하세요."></textarea></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="item-name">조직 적합성</div>
+                  <div class="item-guide">가치관, 업무 스타일, 조직 문화 적응 가능성</div>
+                </td>
+                <td>
+                  <select class="score-select" data-score="cultureFit" title="조직 적합성 점수">
+                    <option value="">선택</option>
+                    <option value="1">1점</option>
+                    <option value="2">2점</option>
+                    <option value="3">3점</option>
+                    <option value="4">4점</option>
+                    <option value="5">5점</option>
+                  </select>
+                </td>
+                <td><textarea class="score-comment" data-comment="cultureFitComment" placeholder="조직 문화 적합성 의견을 입력하세요."></textarea></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="grid-2">
+            <div class="field">
+              <label for="strengths">주요 강점</label>
+              <textarea id="strengths" name="strengths" placeholder="지원자의 핵심 강점을 정리하세요."></textarea>
+            </div>
+            <div class="field">
+              <label for="concerns">우려 사항 / 추가 확인 사항</label>
+              <textarea id="concerns" name="concerns" placeholder="리스크, 재확인 포인트 등을 입력하세요."></textarea>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="overallComment">종합 평가</label>
+            <textarea id="overallComment" name="overallComment" placeholder="면접 전반에 대한 최종 평가를 입력하세요."></textarea>
+          </div>
+
+          <div class="field" style="margin-top: 18px;">
+            <label>최종 의견</label>
+            <div class="decision-group">
+              <div class="decision-option pass">
+                <input id="decisionPass" name="decision" type="radio" value="합격" />
+                <label for="decisionPass">합격</label>
+              </div>
+              <div class="decision-option hold">
+                <input id="decisionHold" name="decision" type="radio" value="보류" />
+                <label for="decisionHold">보류</label>
+              </div>
+              <div class="decision-option fail">
+                <input id="decisionFail" name="decision" type="radio" value="불합격" />
+                <label for="decisionFail">불합격</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="sticky-box">
+        <section class="stat-card">
+          <div class="stat-label">평균 점수</div>
+          <div id="averageScore" class="stat-value">0.0</div>
+          <div class="stat-sub">선택한 점수 항목 기준 자동 계산됩니다.</div>
+        </section>
+
+        <section class="stat-card">
+          <div class="section-title" style="margin-bottom: 14px;">입력 요약</div>
+          <div class="summary-list">
+            <div class="summary-item">
+              <div class="label">면접관</div>
+              <div id="summaryInterviewer" class="value">-</div>
+            </div>
+            <div class="summary-item">
+              <div class="label">지원자 / 직무</div>
+              <div id="summaryCandidate" class="value">-</div>
+            </div>
+            <div class="summary-item">
+              <div class="label">면접 일정</div>
+              <div id="summarySchedule" class="value">-</div>
+            </div>
+            <div class="summary-item">
+              <div class="label">최종 의견</div>
+              <div id="summaryDecision" class="value">-</div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button id="downloadPdfBtn" class="btn-primary" type="button">저장 및 PDF 다운로드</button>
+            <button id="saveDraftBtn" class="btn-secondary" type="button">임시 저장</button>
+            <button id="resetBtn" class="btn-ghost" type="button">초기화</button>
+          </div>
+          <div class="save-note">
+            PDF는 브라우저에서 생성되어 현재 사용 중인 PC로 다운로드됩니다. 일반적으로 다운로드 폴더에 저장됩니다.
+          </div>
+          <div id="statusMessage" class="status"></div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <div class="pdf-stage">
+    <div id="pdfSheet" class="pdf-sheet"></div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'interview-evaluation-form-v1';
+    const scoreFields = [
+      { key: 'jobSkill', label: '직무 역량' },
+      { key: 'communication', label: '커뮤니케이션' },
+      { key: 'problemSolving', label: '문제 해결' },
+      { key: 'teamwork', label: '협업 태도' },
+      { key: 'cultureFit', label: '조직 적합성' }
+    ];
+
+    const formIds = [
+      'interviewerName', 'candidateName', 'position', 'interviewDate', 'interviewTime',
+      'department', 'interviewType', 'strengths', 'concerns', 'overallComment'
+    ];
+
+    function pad(value) {
+      return String(value).padStart(2, '0');
+    }
+
+    function todayDateString() {
+      const now = new Date();
+      return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+    }
+
+    function emptyToDash(text) {
+      return text && String(text).trim() ? String(text).trim() : '-';
+    }
+
+    function getDecisionValue() {
+      const selected = document.querySelector('input[name="decision"]:checked');
+      return selected ? selected.value : '';
+    }
+
+    function getFormData() {
+      const data = {};
+      formIds.forEach((id) => {
+        data[id] = document.getElementById(id).value.trim();
+      });
+
+      scoreFields.forEach(({ key }) => {
+        const scoreElement = document.querySelector(`[data-score="${key}"]`);
+        const commentElement = document.querySelector(`[data-comment="${key}Comment"]`);
+        data[key] = scoreElement ? scoreElement.value : '';
+        data[`${key}Comment`] = commentElement ? commentElement.value.trim() : '';
+      });
+
+      data.decision = getDecisionValue();
+      return data;
+    }
+
+    function setFormData(data) {
+      if (!data || typeof data !== 'object') return;
+
+      formIds.forEach((id) => {
+        const element = document.getElementById(id);
+        if (element && data[id] !== undefined) element.value = data[id];
+      });
+
+      scoreFields.forEach(({ key }) => {
+        const scoreElement = document.querySelector(`[data-score="${key}"]`);
+        const commentElement = document.querySelector(`[data-comment="${key}Comment"]`);
+        if (scoreElement && data[key] !== undefined) scoreElement.value = data[key];
+        if (commentElement && data[`${key}Comment`] !== undefined) commentElement.value = data[`${key}Comment`];
+      });
+
+      if (data.decision) {
+        const radio = document.querySelector(`input[name="decision"][value="${data.decision}"]`);
+        if (radio) radio.checked = true;
+      }
+    }
+
+    function calculateAverage() {
+      const values = scoreFields
+        .map(({ key }) => Number(document.querySelector(`[data-score="${key}"]`).value))
+        .filter((value) => Number.isFinite(value) && value > 0);
+
+      if (!values.length) return 0;
+      const total = values.reduce((sum, current) => sum + current, 0);
+      return total / values.length;
+    }
+
+    function updateSummary() {
+      const data = getFormData();
+      const avg = calculateAverage();
+
+      document.getElementById('averageScore').textContent = avg ? avg.toFixed(1) : '0.0';
+      document.getElementById('summaryInterviewer').textContent = emptyToDash(data.interviewerName);
+      document.getElementById('summaryCandidate').textContent = `${emptyToDash(data.candidateName)} / ${emptyToDash(data.position)}`;
+
+      const dateText = data.interviewDate || '';
+      const timeText = data.interviewTime || '';
+      const schedule = [dateText, timeText].filter(Boolean).join(' ');
+      document.getElementById('summarySchedule').textContent = emptyToDash(schedule);
+      document.getElementById('summaryDecision').textContent = emptyToDash(data.decision);
+    }
+
+    function saveDraft(showMessage = true) {
+      const data = getFormData();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      if (showMessage) setStatus('임시 저장이 완료되었습니다.', 'ok');
+      updateSummary();
+    }
+
+    function loadDraft() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (!saved) {
+        document.getElementById('interviewDate').value = todayDateString();
+        updateSummary();
+        return;
+      }
+
+      try {
+        const parsed = JSON.parse(saved);
+        setFormData(parsed);
+      } catch (error) {
+        console.error(error);
+      }
+
+      if (!document.getElementById('interviewDate').value) {
+        document.getElementById('interviewDate').value = todayDateString();
+      }
+      updateSummary();
+    }
+
+    function resetForm() {
+      if (!confirm('입력한 내용을 모두 초기화할까요?')) return;
+      localStorage.removeItem(STORAGE_KEY);
+
+      formIds.forEach((id) => {
+        const element = document.getElementById(id);
+        if (!element) return;
+        if (id === 'interviewType') {
+          element.value = '대면';
+        } else if (id === 'interviewDate') {
+          element.value = todayDateString();
+        } else {
+          element.value = '';
+        }
+      });
+
+      scoreFields.forEach(({ key }) => {
+        const scoreElement = document.querySelector(`[data-score="${key}"]`);
+        const commentElement = document.querySelector(`[data-comment="${key}Comment"]`);
+        if (scoreElement) scoreElement.value = '';
+        if (commentElement) commentElement.value = '';
+      });
+
+      document.querySelectorAll('input[name="decision"]').forEach((radio) => {
+        radio.checked = false;
+      });
+
+      updateSummary();
+      setStatus('초기화가 완료되었습니다.', 'ok');
+    }
+
+    function escapeHtml(text) {
+      return String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function getDecisionBadge(decision) {
+      return decision ? decision : '-';
+    }
+
+    function validateRequired(data) {
+      if (!data.interviewerName) return '면접관명을 입력해 주세요.';
+      if (!data.candidateName) return '지원자명을 입력해 주세요.';
+      if (!data.position) return '지원 직무를 입력해 주세요.';
+      if (!data.interviewDate) return '면접일을 선택해 주세요.';
+      if (!data.decision) return '최종 의견을 선택해 주세요.';
+      return '';
+    }
+
+    function buildPdfHtml(data) {
+      const average = calculateAverage();
+      const rows = scoreFields.map(({ key, label }) => `
+        <tr>
+          <td style="width: 120px; font-weight: 700;">${label}</td>
+          <td style="width: 70px; text-align: center;">${escapeHtml(data[key] || '-')}</td>
+          <td>${escapeHtml(data[`${key}Comment`] || '') || '-'}</td>
+        </tr>
+      `).join('');
+
+      return `
+        <div class="pdf-title">면접 평가표</div>
+
+        <table class="pdf-meta">
+          <tr>
+            <th>면접관명</th><td>${escapeHtml(data.interviewerName)}</td>
+            <th>지원자명</th><td>${escapeHtml(data.candidateName)}</td>
+          </tr>
+          <tr>
+            <th>지원 직무</th><td>${escapeHtml(data.position)}</td>
+            <th>면접 유형</th><td>${escapeHtml(data.interviewType || '-')}</td>
+          </tr>
+          <tr>
+            <th>면접 일정</th><td>${escapeHtml([data.interviewDate, data.interviewTime].filter(Boolean).join(' ')) || '-'}</td>
+            <th>평가 부서</th><td>${escapeHtml(data.department || '-')}</td>
+          </tr>
+        </table>
+
+        <div class="pdf-section">1. 항목별 평가</div>
+        <table class="pdf-score">
+          <thead>
+            <tr>
+              <th style="width: 120px;">평가 항목</th>
+              <th style="width: 70px;">점수</th>
+              <th>평가 의견</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+
+        <div class="pdf-section">2. 주요 강점</div>
+        <div class="pdf-box">${escapeHtml(data.strengths || '-')}</div>
+
+        <div class="pdf-section">3. 우려 사항 / 추가 확인 사항</div>
+        <div class="pdf-box">${escapeHtml(data.concerns || '-')}</div>
+
+        <div class="pdf-section">4. 종합 평가</div>
+        <div class="pdf-box">${escapeHtml(data.overallComment || '-')}</div>
+
+        <div class="pdf-footer">
+          <div>
+            <div><strong>평균 점수:</strong> ${average ? average.toFixed(1) : '0.0'} / 5.0</div>
+            <div style="margin-top: 6px;"><strong>면접관:</strong> ${escapeHtml(data.interviewerName)}</div>
+          </div>
+          <div class="pdf-decision">최종 의견: ${escapeHtml(getDecisionBadge(data.decision))}</div>
+        </div>
+      `;
+    }
+
+    function sanitizeFileName(text) {
+      return String(text || '')
+        .trim()
+        .replace(/[\\/:*?"<>|]/g, '_')
+        .replace(/\s+/g, '_')
+        .slice(0, 40) || '면접평가표';
+    }
+
+    async function downloadPdf() {
+      const data = getFormData();
+      const errorMessage = validateRequired(data);
+      if (errorMessage) {
+        setStatus(errorMessage, 'error');
+        return;
+      }
+
+      saveDraft(false);
+      setStatus('PDF를 생성하고 있습니다. 잠시만 기다려 주세요...', 'ok');
+
+      const pdfSheet = document.getElementById('pdfSheet');
+      pdfSheet.innerHTML = buildPdfHtml(data);
+
+      try {
+        const canvas = await html2canvas(pdfSheet, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff'
+        });
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pageWidth = 210;
+        const pageHeight = 297;
+        const margin = 10;
+        const imgWidth = pageWidth - margin * 2;
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        const imgData = canvas.toDataURL('imagePNG');
+
+        if (imgHeight <= pageHeight - margin * 2) {
+          pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
+        } else {
+          let remainingHeight = imgHeight;
+          let positionY = margin;
+          let sourceY = 0;
+          const pageCanvas = document.createElement('canvas');
+          const pageCtx = pageCanvas.getContext('2d');
+          const pagePixelHeight = Math.floor((pageHeight - margin * 2) * canvas.width / imgWidth);
+          pageCanvas.width = canvas.width;
+          pageCanvas.height = pagePixelHeight;
+
+          while (remainingHeight > 0) {
+            pageCtx.clearRect(0, 0, pageCanvas.width, pageCanvas.height);
+            pageCtx.drawImage(
+              canvas,
+              0, sourceY,
+              canvas.width, pagePixelHeight,
+              0, 0,
+              pageCanvas.width, pageCanvas.height
+            );
+
+            const pageImgData = pageCanvas.toDataURL('imagePNG');
+            const renderedHeight = Math.min(pageHeight - margin * 2, remainingHeight);
+            if (sourceY > 0) pdf.addPage();
+            pdf.addImage(pageImgData, 'PNG', margin, positionY, imgWidth, renderedHeight);
+
+            sourceY += pagePixelHeight;
+            remainingHeight -= (pageHeight - margin * 2);
+          }
+        }
+
+        const fileName = `면접평가표_${sanitizeFileName(data.candidateName)}_${sanitizeFileName(data.interviewerName)}_${data.interviewDate || todayDateString()}.pdf`;
+        pdf.save(fileName);
+        setStatus('PDF 다운로드가 시작되었습니다.', 'ok');
+      } catch (error) {
+        console.error(error);
+        setStatus('PDF 생성 중 오류가 발생했습니다. 다시 시도해 주세요.', 'error');
+      }
+    }
+
+    function setStatus(message, type = '') {
+      const status = document.getElementById('statusMessage');
+      status.textContent = message;
+      status.className = `status ${type}`.trim();
+    }
+
+    function bindEvents() {
+      document.querySelectorAll('input, textarea, select').forEach((element) => {
+        element.addEventListener('input', () => {
+          saveDraft(false);
+          updateSummary();
+        });
+        element.addEventListener('change', () => {
+          saveDraft(false);
+          updateSummary();
+        });
+      });
+
+      document.getElementById('saveDraftBtn').addEventListener('click', () => saveDraft(true));
+      document.getElementById('downloadPdfBtn').addEventListener('click', downloadPdf);
+      document.getElementById('resetBtn').addEventListener('click', resetForm);
+    }
+
+    bindEvents();
+    loadDraft();
+    updateSummary();
+  </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</body>
+</html>
