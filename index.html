@@ -277,6 +277,48 @@
       font-weight: 800;
       margin-bottom: 6px;
       color: var(--brand-dark);
+      display: inline-block;
+      cursor: help;
+      border-bottom: 1px dashed rgba(0,191,182,0.5);
+    }
+
+    .tooltip-wrap {
+      position: relative;
+      display: inline;
+    }
+
+    .tooltip-wrap .tooltip-box {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgb(39,54,70);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 1.5;
+      padding: 8px 12px;
+      border-radius: 8px;
+      white-space: normal;
+      width: 260px;
+      z-index: 100;
+      pointer-events: none;
+      box-shadow: 0 8px 20px rgba(39,54,70,0.25);
+    }
+
+    .tooltip-wrap .tooltip-box::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 6px solid transparent;
+      border-top-color: rgb(39,54,70);
+    }
+
+    .tooltip-wrap:hover .tooltip-box {
+      display: block;
     }
 
     .item-guide {
@@ -772,12 +814,14 @@
   <div class="container">
     <section class="hero">
       <h1>상상인그룹 인터뷰 평가 기록 페이지</h1>
-      <div style="margin-top: 12px; display: grid; gap: 6px;">
+      <div style="margin-top: 12px; display: grid; gap: 4px;">
         <div style="display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap;">
-          <span style="display: inline-flex; align-items: center; justify-content: center; padding: 5px 10px; border-radius: 999px; background: rgba(39,54,70,0.1); border: 1px solid rgba(39,54,70,0.15); font-size: 12px; font-weight: 800; white-space: nowrap; color: rgb(39,54,70);">사용 방법</span>
-          <span style="flex: 1; min-width: 260px; color: rgb(39,54,70); line-height: 1.4;">1. 평가 내용을 기록하고 PDF 다운로드 버튼을 누르면 PC로 평가 기록이 다운로드 됩니다. 일반적으로 다운로드 폴더에 저장됩니다.</span>
+          <span style="display: inline-flex; align-items: center; justify-content: center; padding: 5px 10px; border-radius: 999px; background: rgba(39,54,70,0.1); border: 1px solid rgba(39,54,70,0.15); font-size: 11px; font-weight: 800; white-space: nowrap; color: rgb(39,54,70);">사용 방법</span>
+          <span style="flex: 1; min-width: 260px; color: rgb(39,54,70); line-height: 1.0;">1. 평가 내용을 기록하고 PDF 다운로드 버튼을 누르면 PC로 평가 기록이 다운로드 됩니다. 일반적으로 다운로드 폴더에 저장됩니다.</span>
         </div>
-        <div style="color: rgb(39,54,70); line-height: 1.0;">      2. 작성 중인 내용은 브라우저에 자동 임시 저장되며, 같은 브라우저에서 재접속하면 이전 입력값을 이어서 볼 수 있습니다.</div>
+        <div style="display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap; padding-left: 56px;">
+          <span style="color: rgb(39,54,70); line-height: 1.0;">2. 작성 중인 내용은 브라우저에 자동 임시 저장되며, 같은 브라우저에서 재접속하면 이전 입력값을 이어서 볼 수 있습니다.</span>
+        </div>
       </div>
     </section>
 
@@ -837,7 +881,7 @@
               </thead>
               <tbody>
                 <tr>
-                  <td><div class="item-name">직무 이해도</div></td>
+                  <td><span class="tooltip-wrap"><span class="item-name">직무 이해도</span><span class="tooltip-box">실무 지식, 숙련도, 트렌드 이해도</span></span></td>
                   <td>
                     <select class="score-select" data-score="jobUnderstanding">
                       <option value="">선택</option>
@@ -851,7 +895,7 @@
                   <td><textarea class="score-comment" data-comment="jobUnderstandingComment" placeholder=""></textarea></td>
                 </tr>
                 <tr>
-                  <td><div class="item-name">직무 전문성</div></td>
+                  <td><span class="tooltip-wrap"><span class="item-name">직무 전문성</span><span class="tooltip-box">직무의 실질적 수행 내용(깊이, 과업, 결과 기반)</span></span></td>
                   <td>
                     <select class="score-select" data-score="jobExpertise">
                       <option value="">선택</option>
@@ -865,7 +909,7 @@
                   <td><textarea class="score-comment" data-comment="jobExpertiseComment" placeholder=""></textarea></td>
                 </tr>
                 <tr>
-                  <td><div class="item-name">문제 해결력</div></td>
+                  <td><span class="tooltip-wrap"><span class="item-name">문제 해결력</span><span class="tooltip-box">구조적/단계적 사고와 대응력, 문제 접근 방식</span></span></td>
                   <td>
                     <select class="score-select" data-score="problemSolving">
                       <option value="">선택</option>
@@ -895,7 +939,7 @@
               </thead>
               <tbody>
                 <tr>
-                  <td><div class="item-name">커리어 적합성</div></td>
+                  <td><span class="tooltip-wrap"><span class="item-name">커리어 적합성</span><span class="tooltip-box">지금까지의 커리어와 이번 포지션의 연결성, 유사성</span></span></td>
                   <td>
                     <select class="score-select" data-score="careerFit">
                       <option value="">선택</option>
@@ -909,7 +953,7 @@
                   <td><textarea class="score-comment" data-comment="careerFitComment" placeholder=""></textarea></td>
                 </tr>
                 <tr>
-                  <td><div class="item-name">커리어 발전 방향</div></td>
+                  <td><span class="tooltip-wrap"><span class="item-name">커리어 발전 방향</span><span class="tooltip-box">희망하는 성장 목표와 조직의 연결성, 일치성</span></span></td>
                   <td>
                     <select class="score-select" data-score="careerGrowth">
                       <option value="">선택</option>
@@ -923,7 +967,7 @@
                   <td><textarea class="score-comment" data-comment="careerGrowthComment" placeholder=""></textarea></td>
                 </tr>
                 <tr>
-                  <td><div class="item-name">이직 사유</div></td>
+                  <td><span class="tooltip-wrap"><span class="item-name">이직 사유</span><span class="tooltip-box">이직 사유의 타당성, 반복/회피/도피성 여부</span></span></td>
                   <td>
                     <select class="score-select" data-score="turnoverReason">
                       <option value="">선택</option>
@@ -953,7 +997,7 @@
               </thead>
               <tbody>
                 <tr>
-                  <td><div class="item-name">도전</div></td>
+                  <td><span class="tooltip-wrap"><span class="item-name">도전</span><span class="tooltip-box">새로운 환경 수용성, 스스로 문제를 발견하고 실행한 경험, 실패 이후 개선 및 재도전 경험, 열정적 학습 태도</span></span></td>
                   <td>
                     <select class="score-select" data-score="challenge">
                       <option value="">선택</option>
@@ -967,7 +1011,7 @@
                   <td><textarea class="score-comment" data-comment="challengeComment" placeholder=""></textarea></td>
                 </tr>
                 <tr>
-                  <td><div class="item-name">연결</div></td>
+                  <td><span class="tooltip-wrap"><span class="item-name">연결</span><span class="tooltip-box">타 부서·동료와의 협업 경험, 조직 전체 관점에서의 사고, 외부에 대한 수용력</span></span></td>
                   <td>
                     <select class="score-select" data-score="connection">
                       <option value="">선택</option>
@@ -981,7 +1025,7 @@
                   <td><textarea class="score-comment" data-comment="connectionComment" placeholder=""></textarea></td>
                 </tr>
                 <tr>
-                  <td><div class="item-name">존중</div></td>
+                  <td><span class="tooltip-wrap"><span class="item-name">존중</span><span class="tooltip-box">피드백 수용 태도, 갈등 대응 방식, 반대 의견 전달 방식, 자신의 오류 가능성을 인정하는 태도</span></span></td>
                   <td>
                     <select class="score-select" data-score="respect">
                       <option value="">선택</option>
