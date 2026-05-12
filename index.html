@@ -29,7 +29,7 @@
       margin: 0;
       font-family: "Noto Sans KR", sans-serif;
       color: rgb(39,54,70);
-      background: rgb(0,191,182);
+      background: #e8f5f4;
     }
 
     .container {
@@ -39,6 +39,71 @@
 
     .hero {
       background: rgb(0,191,182);
+      color: #fff;
+      border-radius: 20px;
+      padding: 28px 32px;
+      box-shadow: 0 14px 32px rgba(39, 54, 70, 0.12);
+      margin-bottom: 20px;
+    }
+
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+      line-height: 1.2;
+      font-weight: 900;
+    }
+
+    .hero p {
+      margin: 0;
+      color: rgba(255,255,255,0.9);
+      line-height: 1.5;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.25fr 0.85fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      background: #ffffff;
+      border: 1px solid rgba(0, 191, 182, 0.15);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 20px 24px 14px;
+      background: rgb(0,191,182);
+      border-bottom: 1px solid rgba(39,54,70,0.1);
+    }
+
+    .panel-header h2 {
+      margin: 0;
+      font-size: 20px;
+      color: #fff;
+      font-weight: 900;
+    }
+
+    .panel-header p {
+      margin: 8px 0 0;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .panel-body {
+      padding: 22px;
+    }
+
+    .section-title {
+      margin: 0 0 12px;
+      font-size: 15px;
+      font-weight: 800;
+      color: rgb(39,54,70);
+    }
       color: rgb(39,54,70);
       border-radius: 20px;
       padding: 28px 32px;
@@ -184,9 +249,29 @@
       font-weight: 800;
     }
 
-    .score-table .col-item { width: 24%; }
-    .score-table .col-score { width: 15%; }
-    .score-table .col-comment { width: 61%; }
+    .score-table .col-item { width: 22%; }
+    .score-table .col-score { width: 14%; }
+    .score-table .col-comment { width: 64%; }
+
+    .eval-category {
+      margin-bottom: 20px;
+    }
+
+    .eval-category-label {
+      font-size: 13px;
+      font-weight: 900;
+      color: rgb(39,54,70);
+      padding: 10px 14px;
+      background: rgba(0,191,182,0.12);
+      border: 1px solid rgba(0,191,182,0.2);
+      border-bottom: none;
+      border-radius: 10px 10px 0 0;
+    }
+
+    .eval-category .score-table {
+      border-radius: 0 0 12px 12px;
+      margin-bottom: 0;
+    }
 
     .item-name {
       font-weight: 800;
@@ -269,10 +354,10 @@
     }
 
     .stat-card {
-      background: linear-gradient(180deg, #ffffff 0%, #f8fcfc 100%);
-      border: 1px solid rgba(168, 189, 185, 0.38);
+      background: #ffffff;
+      border: 1px solid rgba(0,191,182,0.15);
       border-radius: var(--radius);
-      box-shadow: var(--shadow-soft);
+      box-shadow: var(--shadow);
       padding: 20px;
       position: relative;
       overflow: hidden;
@@ -285,7 +370,7 @@
       top: 0;
       width: 100%;
       height: 4px;
-      background: linear-gradient(90deg, var(--brand-dark) 0%, var(--brand) 100%);
+      background: rgb(0,191,182);
     }
 
     .stat-label {
@@ -738,102 +823,180 @@
           </div>
 
           <h3 class="section-title">항목별 평가</h3>
-          <table class="score-table">
-            <thead>
-              <tr>
-                <th class="col-item">평가 항목</th>
-                <th class="col-score">점수</th>
-                <th class="col-comment">평가 의견</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <div class="item-name">직무 역량</div>
-                  <div class="item-guide">직무 이해도, 기술 수준, 실무 적용 가능성</div>
-                </td>
-                <td>
-                  <select class="score-select" data-score="jobSkill" title="직무 역량 점수">
-                    <option value="">선택</option>
-                    <option value="1">1점</option>
-                    <option value="2">2점</option>
-                    <option value="3">3점</option>
-                    <option value="4">4점</option>
-                    <option value="5">5점</option>
-                  </select>
-                </td>
-                <td><textarea class="score-comment" data-comment="jobSkillComment" placeholder="직무 관련 강점, 보완점 등을 입력하세요."></textarea></td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="item-name">커뮤니케이션</div>
-                  <div class="item-guide">의사 전달력, 질문 이해도, 대화 태도</div>
-                </td>
-                <td>
-                  <select class="score-select" data-score="communication" title="커뮤니케이션 점수">
-                    <option value="">선택</option>
-                    <option value="1">1점</option>
-                    <option value="2">2점</option>
-                    <option value="3">3점</option>
-                    <option value="4">4점</option>
-                    <option value="5">5점</option>
-                  </select>
-                </td>
-                <td><textarea class="score-comment" data-comment="communicationComment" placeholder="답변 전달력, 경청 태도 등을 입력하세요."></textarea></td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="item-name">문제 해결</div>
-                  <div class="item-guide">상황 분석력, 논리성, 문제 접근 방식</div>
-                </td>
-                <td>
-                  <select class="score-select" data-score="problemSolving" title="문제 해결 점수">
-                    <option value="">선택</option>
-                    <option value="1">1점</option>
-                    <option value="2">2점</option>
-                    <option value="3">3점</option>
-                    <option value="4">4점</option>
-                    <option value="5">5점</option>
-                  </select>
-                </td>
-                <td><textarea class="score-comment" data-comment="problemSolvingComment" placeholder="문제 해결 방식과 사례를 입력하세요."></textarea></td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="item-name">협업 태도</div>
-                  <div class="item-guide">협업 경험, 피드백 수용성, 조직 내 상호작용</div>
-                </td>
-                <td>
-                  <select class="score-select" data-score="teamwork" title="협업 태도 점수">
-                    <option value="">선택</option>
-                    <option value="1">1점</option>
-                    <option value="2">2점</option>
-                    <option value="3">3점</option>
-                    <option value="4">4점</option>
-                    <option value="5">5점</option>
-                  </select>
-                </td>
-                <td><textarea class="score-comment" data-comment="teamworkComment" placeholder="협업 자세, 팀 적응 가능성 등을 입력하세요."></textarea></td>
-              </tr>
-              <tr>
-                <td>
-                  <div class="item-name">조직 적합성</div>
-                  <div class="item-guide">가치관, 업무 스타일, 조직 문화 적응 가능성</div>
-                </td>
-                <td>
-                  <select class="score-select" data-score="cultureFit" title="조직 적합성 점수">
-                    <option value="">선택</option>
-                    <option value="1">1점</option>
-                    <option value="2">2점</option>
-                    <option value="3">3점</option>
-                    <option value="4">4점</option>
-                    <option value="5">5점</option>
-                  </select>
-                </td>
-                <td><textarea class="score-comment" data-comment="cultureFitComment" placeholder="조직 문화 적합성 의견을 입력하세요."></textarea></td>
-              </tr>
-            </tbody>
-          </table>
+
+          <!-- 직무 역량 -->
+          <div class="eval-category">
+            <div class="eval-category-label">직무 역량</div>
+            <table class="score-table">
+              <thead>
+                <tr>
+                  <th class="col-item">평가 역량</th>
+                  <th class="col-score">점수</th>
+                  <th class="col-comment">평가 의견</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="item-name">직무 이해도</div></td>
+                  <td>
+                    <select class="score-select" data-score="jobUnderstanding">
+                      <option value="">선택</option>
+                      <option value="1">1점</option>
+                      <option value="2">2점</option>
+                      <option value="3">3점</option>
+                      <option value="4">4점</option>
+                      <option value="5">5점</option>
+                    </select>
+                  </td>
+                  <td><textarea class="score-comment" data-comment="jobUnderstandingComment" placeholder=""></textarea></td>
+                </tr>
+                <tr>
+                  <td><div class="item-name">직무 전문성</div></td>
+                  <td>
+                    <select class="score-select" data-score="jobExpertise">
+                      <option value="">선택</option>
+                      <option value="1">1점</option>
+                      <option value="2">2점</option>
+                      <option value="3">3점</option>
+                      <option value="4">4점</option>
+                      <option value="5">5점</option>
+                    </select>
+                  </td>
+                  <td><textarea class="score-comment" data-comment="jobExpertiseComment" placeholder=""></textarea></td>
+                </tr>
+                <tr>
+                  <td><div class="item-name">문제 해결력</div></td>
+                  <td>
+                    <select class="score-select" data-score="problemSolving">
+                      <option value="">선택</option>
+                      <option value="1">1점</option>
+                      <option value="2">2점</option>
+                      <option value="3">3점</option>
+                      <option value="4">4점</option>
+                      <option value="5">5점</option>
+                    </select>
+                  </td>
+                  <td><textarea class="score-comment" data-comment="problemSolvingComment" placeholder=""></textarea></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 커리어 적합도 -->
+          <div class="eval-category">
+            <div class="eval-category-label">커리어 적합도</div>
+            <table class="score-table">
+              <thead>
+                <tr>
+                  <th class="col-item">평가 역량</th>
+                  <th class="col-score">점수</th>
+                  <th class="col-comment">평가 의견</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="item-name">커리어 적합성</div></td>
+                  <td>
+                    <select class="score-select" data-score="careerFit">
+                      <option value="">선택</option>
+                      <option value="1">1점</option>
+                      <option value="2">2점</option>
+                      <option value="3">3점</option>
+                      <option value="4">4점</option>
+                      <option value="5">5점</option>
+                    </select>
+                  </td>
+                  <td><textarea class="score-comment" data-comment="careerFitComment" placeholder=""></textarea></td>
+                </tr>
+                <tr>
+                  <td><div class="item-name">커리어 발전 방향</div></td>
+                  <td>
+                    <select class="score-select" data-score="careerGrowth">
+                      <option value="">선택</option>
+                      <option value="1">1점</option>
+                      <option value="2">2점</option>
+                      <option value="3">3점</option>
+                      <option value="4">4점</option>
+                      <option value="5">5점</option>
+                    </select>
+                  </td>
+                  <td><textarea class="score-comment" data-comment="careerGrowthComment" placeholder=""></textarea></td>
+                </tr>
+                <tr>
+                  <td><div class="item-name">이직 사유</div></td>
+                  <td>
+                    <select class="score-select" data-score="turnoverReason">
+                      <option value="">선택</option>
+                      <option value="1">1점</option>
+                      <option value="2">2점</option>
+                      <option value="3">3점</option>
+                      <option value="4">4점</option>
+                      <option value="5">5점</option>
+                    </select>
+                  </td>
+                  <td><textarea class="score-comment" data-comment="turnoverReasonComment" placeholder=""></textarea></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 조직 적합도 -->
+          <div class="eval-category">
+            <div class="eval-category-label">조직 적합도</div>
+            <table class="score-table">
+              <thead>
+                <tr>
+                  <th class="col-item">평가 역량</th>
+                  <th class="col-score">점수</th>
+                  <th class="col-comment">평가 의견</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><div class="item-name">도전</div></td>
+                  <td>
+                    <select class="score-select" data-score="challenge">
+                      <option value="">선택</option>
+                      <option value="1">1점</option>
+                      <option value="2">2점</option>
+                      <option value="3">3점</option>
+                      <option value="4">4점</option>
+                      <option value="5">5점</option>
+                    </select>
+                  </td>
+                  <td><textarea class="score-comment" data-comment="challengeComment" placeholder=""></textarea></td>
+                </tr>
+                <tr>
+                  <td><div class="item-name">연결</div></td>
+                  <td>
+                    <select class="score-select" data-score="connection">
+                      <option value="">선택</option>
+                      <option value="1">1점</option>
+                      <option value="2">2점</option>
+                      <option value="3">3점</option>
+                      <option value="4">4점</option>
+                      <option value="5">5점</option>
+                    </select>
+                  </td>
+                  <td><textarea class="score-comment" data-comment="connectionComment" placeholder=""></textarea></td>
+                </tr>
+                <tr>
+                  <td><div class="item-name">존중</div></td>
+                  <td>
+                    <select class="score-select" data-score="respect">
+                      <option value="">선택</option>
+                      <option value="1">1점</option>
+                      <option value="2">2점</option>
+                      <option value="3">3점</option>
+                      <option value="4">4점</option>
+                      <option value="5">5점</option>
+                    </select>
+                  </td>
+                  <td><textarea class="score-comment" data-comment="respectComment" placeholder=""></textarea></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
           <div class="grid-2">
             <div class="field">
@@ -919,11 +1082,18 @@
   <script>
     const STORAGE_KEY = 'interview-evaluation-form-v1';
     const scoreFields = [
-      { key: 'jobSkill', label: '직무 역량' },
-      { key: 'communication', label: '커뮤니케이션' },
-      { key: 'problemSolving', label: '문제 해결' },
-      { key: 'teamwork', label: '협업 태도' },
-      { key: 'cultureFit', label: '조직 적합성' }
+      // 직무 역량
+      { key: 'jobUnderstanding', label: '직무 이해도', category: '직무 역량' },
+      { key: 'jobExpertise', label: '직무 전문성', category: '직무 역량' },
+      { key: 'problemSolving', label: '문제 해결력', category: '직무 역량' },
+      // 커리어 적합도
+      { key: 'careerFit', label: '커리어 적합성', category: '커리어 적합도' },
+      { key: 'careerGrowth', label: '커리어 발전 방향', category: '커리어 적합도' },
+      { key: 'turnoverReason', label: '이직 사유', category: '커리어 적합도' },
+      // 조직 적합도
+      { key: 'challenge', label: '도전', category: '조직 적합도' },
+      { key: 'connection', label: '연결', category: '조직 적합도' },
+      { key: 'respect', label: '존중', category: '조직 적합도' }
     ];
 
     const formIds = [
@@ -1093,13 +1263,33 @@
 
     function buildPdfHtml(data) {
       const average = calculateAverage();
-      const rows = scoreFields.map(({ key, label }) => `
-        <tr>
-          <td style="width: 120px; font-weight: 800; color: var(--brand-dark);">${label}</td>
-          <td style="width: 70px; text-align: center; font-weight: 800; color: var(--brand-dark);">${escapeHtml(data[key] || '-')}</td>
-          <td>${escapeHtml(data[`${key}Comment`] || '') || '-'}</td>
-        </tr>
-      `).join('');
+      const categories = ['직무 역량', '커리어 적합도', '조직 적합도'];
+
+      const categorySections = categories.map(cat => {
+        const items = scoreFields.filter(f => f.category === cat);
+        const rows = items.map(({ key, label }) => `
+          <tr>
+            <td style="width: 120px; font-weight: 800; color: rgb(39,54,70);">${label}</td>
+            <td style="width: 70px; text-align: center; font-weight: 800; color: rgb(39,54,70);">${escapeHtml(data[key] || '-')}</td>
+            <td>${escapeHtml(data[`${key}Comment`] || '') || '-'}</td>
+          </tr>
+        `).join('');
+        return `
+          <div style="margin-top: 14px;">
+            <div style="font-size: 13px; font-weight: 900; color: rgb(39,54,70); padding: 8px 12px; background: rgba(0,191,182,0.12); border: 1px solid rgba(0,191,182,0.2); border-bottom: none; border-radius: 8px 8px 0 0;">${cat}</div>
+            <table class="pdf-score">
+              <thead>
+                <tr>
+                  <th style="width: 120px;">평가 역량</th>
+                  <th style="width: 70px;">점수</th>
+                  <th>평가 의견</th>
+                </tr>
+              </thead>
+              <tbody>${rows}</tbody>
+            </table>
+          </div>
+        `;
+      }).join('');
 
       return `
         <div class="pdf-brandbar">
@@ -1131,7 +1321,7 @@
           <table class="pdf-meta">
             <tr>
               <th>계열사명</th><td>${escapeHtml(data.affiliateName)}</td>
-              <th>면접관명</th><td>${escapeHtml(data.interviewerName)}</td>
+              <th>인터뷰관명</th><td>${escapeHtml(data.interviewerName)}</td>
             </tr>
             <tr>
               <th>지원자명</th><td>${escapeHtml(data.candidateName)}</td>
@@ -1139,37 +1329,28 @@
             </tr>
             <tr>
               <th>지원부서(팀) / 직무</th><td>${escapeHtml(data.targetDeptJob)}</td>
-              <th>면접일자</th><td>${escapeHtml(data.interviewDate || '-')}</td>
+              <th>인터뷰일자</th><td>${escapeHtml(data.interviewDate || '-')}</td>
             </tr>
           </table>
 
-          <div class="pdf-section">1. 항목별 평가</div>
-          <table class="pdf-score">
-            <thead>
-              <tr>
-                <th style="width: 120px;">평가 항목</th>
-                <th style="width: 70px;">점수</th>
-                <th>평가 의견</th>
-              </tr>
-            </thead>
-            <tbody>${rows}</tbody>
-          </table>
+          <div class="pdf-section">항목별 평가</div>
+          ${categorySections}
 
-          <div class="pdf-section">2. 좋은 Point</div>
+          <div class="pdf-section">좋은 Point</div>
           <div class="pdf-box">${escapeHtml(data.strengths || '-')}</div>
 
-          <div class="pdf-section">3. 우려 사항 / 추가 확인 사항</div>
+          <div class="pdf-section">우려 사항 / 추가 확인 사항</div>
           <div class="pdf-box">${escapeHtml(data.concerns || '-')}</div>
 
-          <div class="pdf-section">4. 종합 평가</div>
+          <div class="pdf-section">종합 평가</div>
           <div class="pdf-box">${escapeHtml(data.overallComment || '-')}</div>
 
-          <div class="pdf-section">5. 최종 의견</div>
+          <div class="pdf-section">최종 의견</div>
           <div class="pdf-box pdf-box--decision">${escapeHtml(getDecisionBadge(data.decision))}</div>
 
           <div class="pdf-footer">
             <div>
-              <div><strong>계열사 / 면접관</strong> ${escapeHtml(data.affiliateName)} / ${escapeHtml(data.interviewerName)}</div>
+              <div><strong>계열사 / 인터뷰관</strong> ${escapeHtml(data.affiliateName)} / ${escapeHtml(data.interviewerName)}</div>
               <div><strong>지원자</strong> ${escapeHtml(data.candidateName)}</div>
             </div>
             <div class="pdf-decision">인터뷰 평가 기록</div>
