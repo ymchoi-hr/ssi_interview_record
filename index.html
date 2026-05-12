@@ -1631,6 +1631,19 @@
       const categorySections = ['직무 역량', '커리어 적합도', '조직 적합도'].map(cat => {
         const items = scoreFields.filter(f => f.category === cat);
         const rows = items.map(({ key, label }) => {
+            // 웹페이지의 설명 문구(item-guide) 매핑
+            const guides = {
+                'jobUnderstanding': '실무 지식, 숙련도, 트렌드 이해도',
+                'jobExpertise': '직무의 실질적 수행 내용(깊이, 과업, 결과 기반)',
+                'problemSolving': '구조적/단계적 사고와 대응력, 문제 접근 방식',
+                'careerFit': '지금까지의 커리어와 이번 포지션의 연결성, 유사성',
+                'careerGrowth': '희망하는 성장 목표와 조직의 연결성, 일치성',
+                'turnoverReason': '이직 사유의 타당성, 반복/회피/도피성 여부',
+                'challenge': '새로운 환경 수용성, 자발적 행동력, 끊임없는 시도, 열정적 학습 태도',
+                'connection': '타 부서·동료와의 협업 경험, 조직 전체 관점에서의 사고, 외부에 대한 수용력',
+                'respect': '피드백 수용 태도, 갈등 대응 방식, 반대 의견 전달 방식, 자신의 오류 가능성을 인정하는 태도'
+            };
+
             let recordHtml = '';
             if (['challenge', 'connection', 'respect'].includes(key)) {
                 recordHtml = `
@@ -1643,7 +1656,10 @@
 
             return `
               <tr style="page-break-inside: avoid;">
-                <td style="width: 110px; font-weight: 700; color: rgb(39,54,70); font-size: 11px; vertical-align: top;">${label}</td>
+                <td style="width: 130px; vertical-align: top;">
+                    <div style="font-weight: 800; color: rgb(39,54,70); font-size: 11px;">${label}</div>
+                    <div style="font-size: 9px; color: #5f6e78; line-height: 1.3; margin-top: 2px;">${guides[key] || ''}</div>
+                </td>
                 <td style="width: 55px; text-align: center; font-weight: 800; color: rgb(39,54,70); font-size: 13px; vertical-align: top;">${escapeHtml(data[key] || '-')}</td>
                 <td style="font-size: 11px; line-height: 1.5; vertical-align: top;">${recordHtml}</td>
               </tr>
@@ -1656,9 +1672,9 @@
             <table class="pdf-score">
               <thead>
                 <tr>
-                  <th style="width: 110px;">평가 역량</th>
+                  <th style="width: 130px;">평가 역량</th>
                   <th style="width: 55px;">점수</th>
-                  <th>기록/의견</th>
+                  <th>평가 의견</th>
                 </tr>
               </thead>
               <tbody>${rows}</tbody>
@@ -1756,8 +1772,9 @@
 
           ${statsCardsHtml}
 
-          <div class="pdf-footer" style="border-top: 1px solid #d8e5e3; padding-top: 10px; text-align: center; justify-content: center;">
-            <div style="font-size: 12px; font-weight: 700; color: #5f6e78;">상상인그룹 인재경영실 제작</div>
+          <div class="pdf-footer" style="border-top: 1px solid #d8e5e3; padding-top: 20px; text-align: center; margin-top: 30px; page-break-inside: avoid;">
+            <div style="display: inline-flex; align-items: center; justify-content: center; padding: 6px 16px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: 0.05em; background: rgba(39,54,70,0.05); border: 1px solid rgba(39,54,70,0.1); color: rgb(39,54,70); margin-bottom: 8px;">SANGSANGIN GROUP</div>
+            <div style="font-size: 13px; font-weight: 800; color: #273646; letter-spacing: -0.02em;">인재경영실 제작</div>
           </div>
         </div>
       `;
