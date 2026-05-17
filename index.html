@@ -1,1894 +1,673 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>면접 평가표</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style>
-    :root {
-      --bg: #f4f8f8;
-      --panel: #ffffff;
-      --line: #d7e3e1;
-      --line-strong: #a8bdb9;
-      --text: #273646;
-      --muted: #5f6e78;
-      --brand: rgb(0,191,182);
-      --brand-dark: rgb(39,54,70);
-      --brand-soft: rgba(0, 191, 182, 0.08);
-      --good: #16a34a;
-      --warn: #ca8a04;
-      --bad: #dc2626;
-      --shadow: 0 12px 28px rgba(39, 54, 70, 0.06);
-      --radius: 16px;
-    }
-
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: "Noto Sans KR", sans-serif;
-      color: rgb(39,54,70);
-      background: #e8f5f4;
-    }
-
-    .container {
-      width: min(1440px, calc(100% - 40px));
-      margin: 28px auto 60px;
-    }
-
-    .hero {
-      background: rgb(0,191,182);
-      color: #fff;
-      border-radius: 20px;
-      padding: 28px 32px;
-      box-shadow: 0 14px 32px rgba(39, 54, 70, 0.12);
-      margin-bottom: 20px;
-    }
-
-    .hero h1 {
-      margin: 0 0 8px;
-      font-size: 30px;
-      line-height: 1.2;
-      font-weight: 900;
-    }
-
-    .hero p {
-      margin: 0;
-      color: rgba(255,255,255,0.9);
-      line-height: 1.5;
-    }
-
-    .layout {
-      display: grid;
-      grid-template-columns: 1.25fr 0.85fr;
-      gap: 20px;
-      align-items: start;
-    }
-
-    .panel {
-      background: #ffffff;
-      border: 1px solid rgba(0, 191, 182, 0.15);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    .panel-header {
-      padding: 20px 24px 14px;
-      background: rgb(0,191,182);
-      border-bottom: 1px solid rgba(39,54,70,0.1);
-    }
-
-    .panel-header h2 {
-      margin: 0;
-      font-size: 20px;
-      color: #fff;
-      font-weight: 900;
-    }
-
-    .panel-header p {
-      margin: 8px 0 0;
-      color: rgba(255,255,255,0.75);
-      line-height: 1.5;
-      font-size: 14px;
-    }
-
-    .panel-body {
-      padding: 22px;
-    }
-
-    .section-title {
-      margin: 0 0 12px;
-      font-size: 15px;
-      font-weight: 800;
-      color: rgb(39,54,70);
-    }
-
-    .grid-2, .grid-3 {
-      display: grid;
-      gap: 14px;
-      margin-bottom: 18px;
-    }
-
-    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .field label {
-      font-size: 13px;
-      font-weight: 800;
-      color: rgb(39,54,70);
-    }
-
-    input, textarea, select {
-      width: 100%;
-      border: 1px solid rgba(0,191,182,0.3);
-      background: #fff;
-      color: rgb(39,54,70);
-      border-radius: 10px;
-      padding: 12px 14px;
-      font-size: 14px;
-      outline: none;
-      transition: border-color .2s, box-shadow .2s;
-    }
-
-    input::placeholder, textarea::placeholder {
-      color: rgba(39,54,70,0.45);
-    }
-
-    input:hover, textarea:hover, select:hover {
-      border-color: rgba(0, 191, 182, 0.6);
-    }
-
-    input:focus, textarea:focus, select:focus {
-      border-color: rgb(0,191,182);
-      box-shadow: 0 0 0 3px rgba(0, 191, 182, 0.15);
-    }
-
-    textarea { min-height: 100px; resize: vertical; }
-
-    .score-table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      overflow: hidden;
-      margin-bottom: 18px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
-    }
-
-    .score-table th,
-    .score-table td {
-      border-bottom: 1px solid var(--line);
-      border-right: 1px solid var(--line);
-      padding: 10px;
-      vertical-align: top;
-      background: #fff;
-    }
-
-    .score-table tr:last-child td { border-bottom: none; }
-    .score-table th:last-child, .score-table td:last-child { border-right: none; }
-
-    .score-table thead th {
-      background: linear-gradient(180deg, #f4fdfc 0%, #edf9f8 100%);
-      font-size: 13px;
-      color: var(--brand-dark);
-      text-align: center;
-      font-weight: 800;
-    }
-
-    .score-table .col-item { width: 22%; }
-    .score-table .col-score { width: 14%; }
-    .score-table .col-comment { width: 64%; }
-
-    .eval-category {
-      margin-bottom: 20px;
-    }
-
-    .eval-category-label {
-      font-size: 13px;
-      font-weight: 900;
-      color: rgb(39,54,70);
-      padding: 10px 14px;
-      background: rgba(0,191,182,0.12);
-      border: 1px solid rgba(0,191,182,0.2);
-      border-bottom: none;
-      border-radius: 10px 10px 0 0;
-    }
-
-    .eval-category .score-table {
-      border-radius: 0 0 12px 12px;
-      margin-bottom: 0;
-    }
-
-    .item-name {
-      font-weight: 800;
-      color: var(--brand-dark);
-      display: block;
-    }
-
-    .item-guide {
-      font-size: 11px;
-      color: var(--muted);
-      line-height: 1.4;
-      margin-top: 3px;
-    }
-
-    .star-fields {
-      display: grid;
-      gap: 6px;
-    }
-
-    .star-field {
-      display: grid;
-      grid-template-columns: 42px 1fr;
-      gap: 6px;
-      align-items: start;
-    }
-
-    .star-label {
-      font-size: 11px;
-      font-weight: 800;
-      color: #fff;
-      background: rgb(39,54,70);
-      border-radius: 6px;
-      padding: 4px 6px;
-      text-align: center;
-      white-space: nowrap;
-      margin-top: 2px;
-      line-height: 1.3;
-    }
-
-    .star-note {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 700;
-      line-height: 1.4;
-      margin-top: 4px;
-      grid-column: 2;
-    }
-
-    .star-field textarea {
-      min-height: 48px;
-      font-size: 13px;
-    }
-
-    .score-select,
-    .score-comment {
-      width: 100%;
-      font-size: 14px;
-    }
-
-    .score-comment {
-      min-height: 72px;
-    }
-
-    .decision-group {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 6px;
-    }
-
-    .decision-option {
-      flex: 1 1 0;
-      min-width: 120px;
-      position: relative;
-    }
-
-    .decision-option input {
-      position: absolute;
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .decision-option label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 13px 14px;
-      border-radius: 14px;
-      border: 1px solid var(--line);
-      background: #fff;
-      cursor: pointer;
-      font-weight: 800;
-      transition: all .2s ease;
-      box-shadow: 0 4px 14px rgba(39, 54, 70, 0.04);
-    }
-
-    .decision-option.pass input:checked + label {
-      background: rgba(22, 163, 74, 0.09);
-      color: var(--good);
-      border-color: rgba(22, 163, 74, 0.45);
-    }
-
-    .decision-option.hold input:checked + label {
-      background: rgba(202, 138, 4, 0.1);
-      color: var(--warn);
-      border-color: rgba(202, 138, 4, 0.45);
-    }
-
-    .decision-option.fail input:checked + label {
-      background: rgba(220, 38, 38, 0.09);
-      color: var(--bad);
-      border-color: rgba(220, 38, 38, 0.4);
-    }
-
-    .sticky-box {
-      position: sticky;
-      top: 18px;
-      display: grid;
-      gap: 18px;
-    }
-
-    .stat-card {
-      background: #ffffff;
-      border: 1px solid rgba(0,191,182,0.15);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stat-card::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 4px;
-      background: rgb(0,191,182);
-    }
-
-    .stat-label {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-
-    .stat-value {
-      font-size: 38px;
-      font-weight: 900;
-      line-height: 1;
-      margin-bottom: 8px;
-      color: var(--brand-dark);
-      letter-spacing: -0.03em;
-    }
-
-    .stat-sub {
-      color: #475569;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .summary-list {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .summary-item {
-      border: 1px solid rgba(0,191,182,0.2);
-      border-radius: 12px;
-      padding: 10px 12px;
-      background: #ffffff;
-      position: relative;
-    }
-
-    .summary-item::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 8px;
-      bottom: 8px;
-      width: 4px;
-      border-radius: 999px;
-      background: rgb(0,191,182);
-    }
-
-    .summary-item .label {
-      font-size: 11px;
-      color: rgba(39,54,70,0.6);
-      margin-bottom: 4px;
-      font-weight: 700;
-    }
-
-    .summary-item .value {
-      font-size: 14px;
-      font-weight: 800;
-      color: rgb(39,54,70);
-      word-break: break-word;
-    }
-
-    .actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    button {
-      appearance: none;
-      border: none;
-      cursor: pointer;
-      border-radius: 14px;
-      padding: 14px 18px;
-      font-size: 14px;
-      font-weight: 800;
-      letter-spacing: -0.01em;
-      transition: transform .12s ease, box-shadow .2s ease, background .2s ease, opacity .2s ease, border-color .2s ease;
-    }
-
-    button:hover {
-      transform: translateY(-1px);
-    }
-
-    button:active { transform: translateY(1px); }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 100%);
-      color: white;
-      flex: 1 1 220px;
-      box-shadow: 0 14px 28px rgba(0, 191, 182, 0.24);
-    }
-
-    .btn-primary:hover {
-      box-shadow: 0 16px 30px rgba(0, 191, 182, 0.28);
-    }
-
-    .btn-secondary {
-      background: #eefbf9;
-      color: var(--brand-dark);
-      border: 1px solid rgba(0, 191, 182, 0.28);
-      flex: 1 1 140px;
-    }
-
-    .btn-ghost {
-      background: #fff;
-      color: var(--brand-dark);
-      border: 1px solid var(--line);
-      flex: 1 1 140px;
-      box-shadow: 0 8px 18px rgba(39, 54, 70, 0.05);
-    }
-
-    .save-note {
-      margin-top: 12px;
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.65;
-      background: var(--brand-soft);
-      border: 1px solid rgba(0, 191, 182, 0.12);
-      border-radius: 14px;
-      padding: 12px 14px;
-    }
-
-    .status {
-      margin-top: 12px;
-      min-height: 20px;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .status.ok { color: var(--good); }
-    .status.error { color: var(--bad); }
-
-    .pdf-stage {
-      position: fixed;
-      left: -99999px;
-      top: 0;
-      width: 860px;
-      background: white;
-      z-index: -1;
-    }
-
-    .pdf-sheet {
-      width: 794px;
-      min-height: 1123px;
-      padding: 0;
-      background: #ffffff;
-      color: #111827;
-      font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
-      font-size: 12px;
-    }
-
-    .pdf-brandbar {
-      background: linear-gradient(135deg, rgb(0,191,182) 0%, rgb(39,54,70) 100%);
-      color: #ffffff;
-      padding: 26px 34px 24px;
-    }
-
-    .pdf-brand-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 18px;
-    }
-
-    .pdf-brand-mark {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 0.03em;
-      background: rgba(255,255,255,0.14);
-      border: 1px solid rgba(255,255,255,0.18);
-      margin-bottom: 12px;
-    }
-
-    .pdf-title {
-      font-size: 28px;
-      font-weight: 900;
-      letter-spacing: -0.03em;
-      color: #ffffff;
-      margin: 0 0 8px;
-    }
-
-    .pdf-subtitle {
-      font-size: 13px;
-      line-height: 1.65;
-      color: rgba(255,255,255,0.86);
-      max-width: 520px;
-    }
-
-    .pdf-brand-side {
-      min-width: 160px;
-      text-align: right;
-      font-size: 12px;
-      color: rgba(255,255,255,0.9);
-      line-height: 1.7;
-    }
-
-    .pdf-content {
-      padding: 28px 34px 32px;
-      background: #ffffff;
-    }
-
-    /* 페이지 끊김 방지 설정 */
-    .pdf-highlight-grid,
-    .pdf-meta,
-    .pdf-section,
-    .eval-category-pdf-wrapper,
-    .pdf-box,
-    .pdf-footer {
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
-
-    .pdf-score tr {
-      page-break-inside: avoid;
-      break-inside: avoid;
-    }
-
-    .pdf-highlight-grid {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 14px;
-      margin-bottom: 18px;
-    }
-
-    .pdf-highlight-card {
-      border: 1px solid #d8e5e3;
-      border-radius: 16px;
-      background: linear-gradient(180deg, #ffffff 0%, #f8fcfc 100%);
-      padding: 14px 16px;
-    }
-
-    .pdf-highlight-card .caption {
-      font-size: 11px;
-      color: #5f6e78;
-      font-weight: 800;
-      margin-bottom: 8px;
-      letter-spacing: 0.02em;
-    }
-
-    .pdf-highlight-card .value {
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--brand-dark);
-      line-height: 1.5;
-      word-break: break-word;
-    }
-
-    .pdf-highlight-card.score {
-      background: linear-gradient(135deg, rgba(0,191,182,0.12) 0%, rgba(39,54,70,0.06) 100%);
-      border-color: rgba(0,191,182,0.22);
-    }
-
-    .pdf-highlight-card.score .value {
-      font-size: 34px;
-      letter-spacing: -0.03em;
-    }
-
-    .pdf-meta {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      margin-bottom: 18px;
-      font-size: 13px;
-      border: 1px solid #c7d7d4;
-      border-radius: 16px;
-      overflow: hidden;
-    }
-
-    .pdf-meta th,
-    .pdf-meta td,
-    .pdf-score th,
-    .pdf-score td {
-      border-right: 1px solid #c7d7d4;
-      border-bottom: 1px solid #c7d7d4;
-      padding: 10px 12px;
-      vertical-align: top;
-    }
-
-    .pdf-meta tr:last-child th,
-    .pdf-meta tr:last-child td,
-    .pdf-score tr:last-child th,
-    .pdf-score tr:last-child td {
-      border-bottom: none;
-    }
-
-    .pdf-meta th:last-child,
-    .pdf-meta td:last-child,
-    .pdf-score th:last-child,
-    .pdf-score td:last-child {
-      border-right: none;
-    }
-
-    .pdf-meta th {
-      width: 118px;
-      background: #eef8f7;
-      text-align: left;
-      color: var(--brand-dark);
-      font-weight: 800;
-    }
-
-    .pdf-section {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 18px;
-      margin-bottom: 10px;
-      font-size: 15px;
-      font-weight: 900;
-      color: var(--brand-dark);
-      letter-spacing: -0.02em;
-    }
-
-    .pdf-section::before {
-      content: "";
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: linear-gradient(180deg, var(--brand) 0%, var(--brand-dark) 100%);
-      flex: 0 0 10px;
-    }
-
-    .pdf-score {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      font-size: 12px;
-      table-layout: fixed;
-      margin-bottom: 14px;
-      border: 1px solid #c7d7d4;
-      border-radius: 16px;
-      overflow: hidden;
-    }
-
-    .pdf-score th {
-      background: #eef8f7;
-      color: var(--brand-dark);
-      font-weight: 800;
-    }
-
-    .pdf-score td {
-      background: #ffffff;
-    }
-
-    .pdf-box {
-      border: 1px solid #c7d7d4;
-      border-radius: 16px;
-      min-height: 110px;
-      padding: 12px 14px;
-      font-size: 12px;
-      line-height: 1.6;
-      white-space: pre-wrap;
-      word-break: break-word;
-      background: linear-gradient(180deg, #ffffff 0%, #fbfefe 100%);
-    }
-
-    .pdf-box--decision {
-      min-height: auto;
-      background: linear-gradient(135deg, rgba(0,191,182,0.12) 0%, rgba(39,54,70,0.06) 100%);
-      border-color: rgba(0,191,182,0.22);
-      color: var(--brand-dark);
-      font-weight: 900;
-      font-size: 18px;
-      text-align: center;
-      padding: 16px;
-    }
-
-    .pdf-footer {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      margin-top: 20px;
-      padding-top: 14px;
-      border-top: 1px solid #d8e5e3;
-      font-size: 12px;
-      color: #4f5d67;
-      line-height: 1.7;
-    }
-
-    .pdf-decision {
-      font-size: 16px;
-      font-weight: 900;
-      color: var(--brand-dark);
-    }
-
-    .pdf-footer strong {
-      color: var(--brand-dark);
-    }
-
-    .muted {
-      color: var(--muted);
-    }
-
-    /* ===== 태블릿 (768px ~ 1024px) ===== */
-    @media (max-width: 1024px) {
-      .container {
-        width: min(96%, 100%);
-        margin: 20px auto 50px;
-        padding: 0 12px;
-      }
-      .hero {
-        padding: 24px 26px;
-        border-radius: 18px;
-      }
-      .hero h1 { font-size: 26px; }
-      .layout {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
-      .sticky-box {
-        position: static;
-        margin-top: 0;
-      }
-      .panel-body { padding: 18px 20px; }
-      .panel-header { padding: 16px 20px 12px; }
-    }
-
-    /* ===== 소형 태블릿 /大型 모바일 (600px ~ 768px) ===== */
-    @media (max-width: 768px) {
-      .container {
-        width: 100%;
-        margin: 16px 0 40px;
-        padding: 0 16px;
-      }
-      .hero {
-        padding: 20px 20px;
-        border-radius: 14px;
-        margin-bottom: 16px;
-      }
-      .hero h1 {
-        font-size: 22px;
-      }
-      .hero > div {
-        margin-top: 10px;
-        gap: 3px;
-      }
-      .hero > div > div {
-        gap: 8px;
-      }
-      .hero > div > div > span:last-child {
-        min-width: 100%;
-        font-size: 12px;
-      }
-      .hero > div > div[style*="padding-left"] {
-        padding-left: 0;
-      }
-      .grid-2, .grid-3 {
-        grid-template-columns: 1fr;
-        gap: 12px;
-      }
-      .panel {
-        border-radius: 12px;
-      }
-      .panel-header {
-        padding: 14px 18px 10px;
-      }
-      .panel-header h2 { font-size: 18px; }
-      .panel-header p { font-size: 13px; }
-      .panel-body { padding: 16px; }
-      .eval-category-label {
-        font-size: 12px;
-        padding: 8px 12px;
-      }
-      .score-table {
-        display: block;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        border-radius: 0 0 10px 10px;
-      }
-      .score-table table {
-        min-width: 600px;
-      }
-      .score-table th, .score-table td {
-        padding: 10px 10px;
-        font-size: 12px;
-      }
-      .sticky-box {
-        margin-top: 0;
-      }
-      .summary-panel .summary-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-      }
-      .score-display {
-        padding: 16px;
-      }
-      .score-display .stat-value {
-        font-size: 36px;
-      }
-    }
-
-    /* ===== 모바일 (최대 599px) ===== */
-    @media (max-width: 599px) {
-      .container {
-        width: 100%;
-        margin: 12px 0 30px;
-        padding: 0 12px;
-      }
-      .hero {
-        padding: 18px 16px;
-        border-radius: 12px;
-        margin-bottom: 14px;
-      }
-      .hero h1 {
-        font-size: 18px;
-        margin-bottom: 6px;
-      }
-      .hero > div {
-        margin-top: 8px;
-        gap: 2px;
-      }
-      .hero > div > div {
-        flex-wrap: wrap;
-        gap: 6px;
-      }
-      .hero span[style*="999px"] {
-        font-size: 10px !important;
-        padding: 4px 8px !important;
-      }
-      .hero > div > div > span:last-child {
-        font-size: 11px;
-      }
-      .hero > div > div[style*="padding-left"] {
-        padding-left: 0 !important;
-      }
-      .grid-2, .grid-3 {
-        grid-template-columns: 1fr;
-        gap: 10px;
-        margin-bottom: 14px;
-      }
-      .field label {
-        font-size: 12px;
-      }
-      input, textarea, select {
-        padding: 10px 12px;
-        font-size: 13px;
-        border-radius: 8px;
-      }
-      .section-title {
-        font-size: 14px;
-        margin-bottom: 10px;
-      }
-      .panel {
-        border-radius: 10px;
-        border-width: 1px;
-      }
-      .panel-header {
-        padding: 12px 14px 8px;
-      }
-      .panel-header h2 { font-size: 16px; }
-      .panel-header p { font-size: 12px; }
-      .panel-body { padding: 14px; }
-      .eval-category {
-        margin-bottom: 14px;
-      }
-      .eval-category-label {
-        font-size: 11px;
-        padding: 7px 10px;
-        border-radius: 8px 8px 0 0;
-      }
-      .score-table {
-        border-radius: 0 0 8px 8px;
-      }
-      .score-table table {
-        min-width: 500px;
-      }
-      .score-table th {
-        font-size: 11px;
-        padding: 8px 8px;
-      }
-      .score-table td {
-        padding: 8px 6px;
-        font-size: 11px;
-      }
-      .score-table .col-item { width: 28%; }
-      .score-table .col-score { width: 18%; }
-      .score-table .col-comment { width: 54%; }
-      .item-name {
-        font-size: 11px;
-      }
-      .item-guide {
-        font-size: 10px;
-      }
-      .score-select, .score-comment {
-        font-size: 11px;
-        padding: 6px 8px;
-      }
-      textarea.score-comment {
-        min-height: 60px;
-      }
-      .summary-panel .summary-grid {
-        grid-template-columns: 1fr;
-        gap: 8px;
-      }
-      .summary-item {
-        padding: 10px 12px;
-        border-radius: 8px;
-      }
-      .summary-item .label {
-        font-size: 11px;
-      }
-      .summary-item .value {
-        font-size: 12px;
-      }
-      .score-display {
-        padding: 14px;
-        border-radius: 10px;
-        margin-bottom: 14px;
-      }
-      .score-display .stat-value {
-        font-size: 30px;
-      }
-      .score-display .stat-label {
-        font-size: 13px;
-      }
-      .decision-options {
-        flex-direction: column;
-        gap: 8px;
-      }
-      .decision-option {
-        flex: 1;
-      }
-      .actions {
-        flex-direction: column;
-        gap: 10px;
-      }
-      .btn {
-        width: 100%;
-        padding: 14px;
-        font-size: 14px;
-        border-radius: 10px;
-      }
-    }
-
-    /* ===== 극소형 모바일 (최대 380px) ===== */
-    @media (max-width: 380px) {
-      .hero h1 { font-size: 16px; }
-      .score-table table { min-width: 420px; }
-      .panel-header h2 { font-size: 14px; }
-      .btn { padding: 12px; font-size: 13px; }
-    }
-  </style>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+/* [1. 공통 디자인 시스템] */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --primary: rgb(0,191,182);
+  --navy: rgb(39,54,70);
+  --gray: rgb(153,153,153);
+  --line: #e7ebef;
+  --bg: #f6f8fa;
+  --success: #4caf50; 
+  --danger: #ff4d4f;  
+}
+body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: #222; line-height: 1.6; padding: 40px; }
+.container { max-width: 1400px; margin: 0 auto; }
+
+/* [2. 헤더 영역] */
+.header { background: white; border-radius: 24px; padding: 20px 40px; margin-bottom: 24px; border: 1px solid var(--line); position: relative; }
+.title-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px; }
+.title { font-size: 32px; font-weight: 700; color: var(--navy); margin-bottom: 0px; }
+.save-status { font-size: 13px; color: var(--gray); text-align: right; margin-bottom: 12px; }
+
+.guide-container { display: flex; flex-direction: column; gap: 4px; margin-bottom: 0px; padding-left: 4px; }
+.guide-line { display: flex; align-items: center; gap: 12px; font-size: 14px; color: #444; line-height: 1.2; }
+.badge-pill { background: var(--primary); color: white; padding: 4px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+
+/* [3. 공통 섹션 및 그리드] */
+.section { background: white; border-radius: 24px; padding: 32px; margin-bottom: 24px; border: 1px solid var(--line); }
+.section-title { font-size: 22px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+.section-desc { color: var(--gray); font-size: 14px; margin-bottom: 28px; }
+
+/* row-gap을 추가하여 세로 겹침 현상을 해결합니다 */
+.info-grid, .treatment-grid { 
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 20px; 
+  row-gap: 30px; 
+}
+.input-group { display: flex; flex-direction: column; gap: 12px; }
+.label { font-size: 13px; color: var(--gray); font-weight: 600; }
+.input, .select, .textarea { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 14px; font-family: inherit; background: white; }
+
+/* ... 이하 기존 스타일과 동일 ... */
+
+/* [4. 체크박스 스타일] */
+.checkbox-container-box { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 0 14px; height: 45px; display: flex; align-items: center; background: white; }
+.checkbox-group { display: flex; gap: 40px; align-items: center; }
+.checkbox-item { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; color: #444; }
+.checkbox-item input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; accent-color: var(--primary); }
+
+/* [5. 평가 항목 및 버튼 색상 수정] */
+.fit-item { border: 1px solid var(--line); border-radius: 20px; padding: 28px; margin-bottom: 20px; }
+.fit-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.fit-name { font-size: 18px; font-weight: 700; color: var(--primary); }
+
+.reference-area { display: flex; flex-direction: column; gap: 6px; margin-bottom: 8px; }
+.ref-pill { display: flex; gap: 10px; font-size: 13px; align-items: flex-start; }
+.badge-ref { padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; margin-top: 2px; }
+.badge-criteria { background: #f0f4f4; color: #444; border: 1px solid #ddd; }
+.badge-question { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
+
+.qa-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.qa-row {
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.badge-qa {
+  width: 70px;
+  padding: 2px 0;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  margin-top: 2px;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.badge-q {
+  background: #e3f2fd;
+  color: #1976d2;
+  border: 1px solid #bbdefb;
+}
+
+.badge-a {
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.rating-group { display: flex; gap: 6px; }
+.btn-rating {
+  padding: 6px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+  cursor: pointer; border: 1px solid var(--line); background: white; color: var(--gray); transition: 0.2s;
+}
+
+/* 활성화 시 공통 텍스트 색상 */
+.btn-rating.active { color: white; border-color: transparent; }
+
+/* 탁월: 민트 */
+.btn-rating.active.excellent { background: var(--primary); border-color: var(--primary); }
+/* 충족: 초록 */
+.btn-rating.active.good { background: var(--success); border-color: var(--success); }
+/* 미흡: 빨강 */
+.btn-rating.active.poor { background: var(--danger); border-color: var(--danger); }
+
+.btn-rating:hover:not(.active) { background: #f0f4f4; color: var(--navy); }
+
+/* [6. 최종 평가 및 기타] */
+.btn-group { display: flex; gap: 10px; }
+.btn { padding: 10px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; border: none; font-size: 14px; transition: 0.2s; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-secondary { background: #eee; color: #666; }
+
+.decision-group { display: flex; gap: 12px; margin-bottom: 24px; }
+.btn-decision { flex: 1; padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; border: 2px solid transparent; background: #f5f5f5; color: #999; transition: 0.2s; }
+.btn-decision[data-type="recommend"].active { background: #e6fffb; color: var(--primary); border-color: var(--primary); }
+/* 보류 버튼 색상 수정: 충족(success)과 동일하게 변경 */
+.btn-decision[data-type="hold"].active { background: #f6ffed; color: var(--success); border-color: var(--success); }
+.btn-decision[data-type="reject"].active { background: #fff1f0; color: #ff4d4f; border-color: #ff4d4f; }
+
+/* 푸터 스타일 */
+.footer {
+  text-align: center;
+  padding: 40px 0 60px;
+  color: #999;
+  font-size: 13px;
+  letter-spacing: -0.5px;
+}
+
+/* 위로 돌아가기 버튼 스타일 */
+.back-to-top {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 45px;
+  height: 45px;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: none; /* 스크롤 전에는 숨김 */
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.back-to-top:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* 인쇄 시 푸터 및 버튼 제외 */
+@media print {
+  .back-to-top { display: none !important; }
+  .footer { padding: 20px 0; color: #ccc; }
+}
+
+@media print {
+  /* 1. 전체 배율 축소 및 폰트 크기 조정 */
+  html, body {
+    zoom: 0.85; /* 전체 크기를 85%로 축소 (필요시 0.8 등으로 조절) */
+    background: white !important;
+  }
+
+  /* 2. 인쇄 시 배경색 및 테두리 강제 출력 */
+  * { 
+    -webkit-print-color-adjust: exact !important; 
+    print-color-adjust: exact !important; 
+  }
+
+  /* 3. 여백 극소화 */
+  .container { 
+    width: 100% !important; 
+    max-width: 100% !important; 
+    margin: 0 !important; 
+    padding: 10px !important; 
+  }
+
+  /* 4. 섹션 간격 및 내부 패딩 축소 */
+  .section { 
+    padding: 15px !important; 
+    margin-bottom: 12px !important; 
+    break-inside: auto !important; 
+  }
+  
+  .fit-item { 
+    padding: 15px !important; 
+    margin-bottom: 10px !important; 
+    break-inside: auto !important; 
+  }
+
+  /* 5. 항목별 줄바꿈 방지 및 간격 축소 */
+  .input-group, .qa-row, .ref-pill { 
+    break-inside: avoid !important; 
+    margin-bottom: 4px !important; 
+  }
+
+  /* 6. 제목 및 설명글 크기 축소 */
+  .section-title { font-size: 18px !important; margin-bottom: 5px !important; }
+  .section-desc { display: none !important; } /* 인쇄 시 설명글 숨겨 공간 확보 */
+  .fit-name { font-size: 16px !important; }
+
+  /* 7. 폼 요소 높이 축소 */
+  .input, .select, .textarea, .checkbox-container-box { 
+    padding: 8px 12px !important; 
+    font-size: 12px !important;
+  }
+  .textarea { min-height: 50px !important; }
+
+  /* 8. 불필요한 UI 숨기기 (decision-group은 출력되도록 제외함) */
+  .btn-group, .guide-container, .save-status { 
+    display: none !important; 
+  }
+
+  /* 9. 최종 평가 버튼 인쇄 스타일 (추가된 부분) */
+  .decision-group { 
+    display: flex !important; 
+    gap: 10px !important; 
+    margin-top: 10px !important;
+  }
+
+  .btn-decision { 
+    flex: 1;
+    border: 1px solid #ddd !important;
+    background: #f9f9f9 !important;
+    color: #999 !important;
+    padding: 8px !important;
+    text-align: center;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+  }
+
+  /* 활성화된 버튼 강조 스타일 유지 */
+  .btn-decision.active[data-type="recommend"] { background: #e6fffb !important; color: #00b5ad !important; border-color: #00b5ad !important; }
+  .btn-decision.active[data-type="hold"] { background: #f6ffed !important; color: #52c41a !important; border-color: #52c41a !important; }
+  .btn-decision.active[data-type="reject"] { background: #fff1f0 !important; color: #ff4d4f !important; border-color: #ff4d4f !important; }
+}
+</style>
 </head>
 <body>
-  <div class="container">
-    <section class="hero">
-      <h1>상상인그룹 인터뷰 평가 기록 페이지</h1>
-      <div style="margin-top: 10px; display: flex; align-items: center; gap: 15px;">
-        <span style="display: inline-flex; align-items: center; justify-content: center; padding: 6px 14px; border-radius: 999px; background: rgba(255,255,255,0.9); border: 1px solid rgba(39,54,70,0.15); font-size: 14px; font-weight: 800; white-space: nowrap; color: rgb(39,54,70);">사용 방법</span>
-        <div style="display: flex; flex-direction: column; gap: 2px;">
-          <span style="color: rgb(39,54,70); line-height: 1.2; font-size: 14px;">1. 평가 내용을 기록하고 PDF 다운로드 버튼을 누르면 PC로 평가 기록이 다운로드 됩니다. 일반적으로 다운로드 폴더에 저장됩니다.</span>
-          <span style="color: rgb(39,54,70); line-height: 1.2; font-size: 14px;">2. 작성 중인 내용은 브라우저에 자동 임시 저장되며, 같은 브라우저에서 재접속하면 이전 입력값을 이어서 볼 수 있습니다.</span>
-        </div>
+
+<div class="container">
+  <header class="header">
+    <div class="title-section">
+      <h1 class="title">상상인그룹 인터뷰 기록 페이지</h1>
+      <div class="btn-group">
+        <button class="btn btn-secondary" onclick="resetForm()">초기화</button>
+        <button class="btn btn-primary" onclick="validateAndPrint()">PDF 다운로드</button>
       </div>
-    </section>
+    </div>
+    <div class="save-status" id="saveStatus">마지막 저장: 자동 저장 대기 중</div>
+    <div class="guide-container">
+      <div class="guide-line"><span class="badge-pill">사용방법 1</span><span>평가 내용을 기록하고 PDF 다운로드 버튼을 누르면 PC로 평가 기록이 다운로드 됩니다.</span></div>
+      <div class="guide-line"><span class="badge-pill">사용방법 2</span><span>작성 중인 내용은 브라우저에 자동 임시 저장되며, 재접속 시 이전 입력값을 이어서 볼 수 있습니다.</span></div>
+    </div>
+  </header>
 
-    <div class="layout">
-      <section class="panel">
-        <div class="panel-header">
-          <h2>평가 입력</h2>
-        </div>
-        <div class="panel-body">
-          <h3 class="section-title">기본 정보</h3>
-          <div class="grid-3">
-            <div class="field">
-              <label for="affiliateName">계열사명</label>
-              <input id="affiliateName" name="affiliateName" type="text" placeholder="" />
-            </div>
-            <div class="field">
-              <label for="interviewerName">면접관명</label>
-              <input id="interviewerName" name="interviewerName" type="text" placeholder="예: 홍길동" />
-            </div>
-            <div class="field">
-              <label for="interviewDate">면접일자</label>
-              <input id="interviewDate" name="interviewDate" type="date" />
-            </div>
-          </div>
-
-          <div class="grid-3">
-            <div class="field">
-              <label for="targetDeptJob">지원부서(팀) / 직무</label>
-              <input id="targetDeptJob" name="targetDeptJob" type="text" placeholder="예: 플랫폼개발팀 / 프론트엔드 개발자" />
-            </div>
-            <div class="field">
-              <label for="careerType">신입 / 경력</label>
-              <input id="careerType" name="careerType" type="text" placeholder="예: 신입 또는 경력" />
-            </div>
-            <div class="field">
-              <label for="candidateName">지원자명</label>
-              <input id="candidateName" name="candidateName" type="text" placeholder="예: 김지원" />
-            </div>
-          </div>
-
-          <div class="grid-3">
-            <div class="field">
-              <label for="availableDate">입사가능일</label>
-              <input id="availableDate" name="availableDate" type="text" placeholder="예: 합격 통보일 + 4주 후" />
-            </div>
-            <div class="field">
-              <label for="currentSalary">현재 처우</label>
-              <input id="currentSalary" name="currentSalary" type="text" placeholder="예: 연봉 5,000만원, 식대 별도, 교통비 지원" />
-            </div>
-            <div class="field">
-              <label for="desiredSalary">희망 처우</label>
-              <input id="desiredSalary" name="desiredSalary" type="text" placeholder="예: 연봉 6,000만원 이상" />
-            </div>
-          </div>
-
-          <h3 class="section-title">항목별 평가</h3>
-
-          <!-- 직무 역량 -->
-          <div class="eval-category">
-            <div class="eval-category-label">직무 역량</div>
-            <table class="score-table">
-              <thead>
-                <tr>
-                  <th class="col-item">평가 역량</th>
-                  <th class="col-score">점수</th>
-                  <th class="col-comment">평가 의견</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="item-name">직무 이해도</span><span class="item-guide">실무 지식, 숙련도, 트렌드 이해도</span></td>
-                  <td>
-                    <select class="score-select" data-score="jobUnderstanding">
-                      <option value="">선택</option>
-                      <option value="10">10 (매우 우수)</option>
-                      <option value="8">8 (우수)</option>
-                      <option value="5">5 (미흡)</option>
-                      <option value="3">3 (매우 미흡)</option>
-                    </select>
-                  </td>
-                  <td><textarea class="score-comment" data-comment="jobUnderstandingComment" placeholder=""></textarea></td>
-                </tr>
-                <tr>
-                  <td><span class="item-name">직무 전문성</span><span class="item-guide">직무의 실질적 수행 내용(깊이, 과업, 결과 기반)</span></td>
-                  <td>
-                    <select class="score-select" data-score="jobExpertise">
-                      <option value="">선택</option>
-                      <option value="10">10 (매우 우수)</option>
-                      <option value="8">8 (우수)</option>
-                      <option value="5">5 (미흡)</option>
-                      <option value="3">3 (매우 미흡)</option>
-                    </select>
-                  </td>
-                  <td><textarea class="score-comment" data-comment="jobExpertiseComment" placeholder=""></textarea></td>
-                </tr>
-                <tr>
-                  <td><span class="item-name">문제 해결력</span><span class="item-guide">구조적/단계적 사고와 대응력, 문제 접근 방식</span></td>
-                  <td>
-                    <select class="score-select" data-score="problemSolving">
-                      <option value="">선택</option>
-                      <option value="10">10 (매우 우수)</option>
-                      <option value="8">8 (우수)</option>
-                      <option value="5">5 (미흡)</option>
-                      <option value="3">3 (매우 미흡)</option>
-                    </select>
-                  </td>
-                  <td><textarea class="score-comment" data-comment="problemSolvingComment" placeholder=""></textarea></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- 커리어 적합도 -->
-          <div class="eval-category">
-            <div class="eval-category-label">커리어 적합도</div>
-            <table class="score-table">
-              <thead>
-                <tr>
-                  <th class="col-item">평가 역량</th>
-                  <th class="col-score">점수</th>
-                  <th class="col-comment">평가 의견</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="item-name">커리어 적합성</span><span class="item-guide">지금까지의 커리어와 이번 포지션의 연결성, 유사성</span></td>
-                  <td>
-                    <select class="score-select" data-score="careerFit">
-                      <option value="">선택</option>
-                      <option value="10">10 (매우 우수)</option>
-                      <option value="8">8 (우수)</option>
-                      <option value="5">5 (미흡)</option>
-                      <option value="3">3 (매우 미흡)</option>
-                    </select>
-                  </td>
-                  <td><textarea class="score-comment" data-comment="careerFitComment" placeholder=""></textarea></td>
-                </tr>
-                <tr>
-                  <td><span class="item-name">커리어 발전 방향</span><span class="item-guide">희망하는 성장 목표와 조직의 연결성, 일치성</span></td>
-                  <td>
-                    <select class="score-select" data-score="careerGrowth">
-                      <option value="">선택</option>
-                      <option value="10">10 (매우 우수)</option>
-                      <option value="8">8 (우수)</option>
-                      <option value="5">5 (미흡)</option>
-                      <option value="3">3 (매우 미흡)</option>
-                    </select>
-                  </td>
-                  <td><textarea class="score-comment" data-comment="careerGrowthComment" placeholder=""></textarea></td>
-                </tr>
-                <tr>
-                  <td><span class="item-name">이직 사유</span><span class="item-guide">이직 사유의 타당성, 반복/회피/도피성 여부</span></td>
-                  <td>
-                    <select class="score-select" data-score="turnoverReason">
-                      <option value="">선택</option>
-                      <option value="10">10 (매우 우수)</option>
-                      <option value="8">8 (우수)</option>
-                      <option value="5">5 (미흡)</option>
-                      <option value="3">3 (매우 미흡)</option>
-                    </select>
-                  </td>
-                  <td><textarea class="score-comment" data-comment="turnoverReasonComment" placeholder=""></textarea></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <!-- 조직 적합도 -->
-          <div class="eval-category">
-            <div class="eval-category-label">조직 적합도</div>
-            <table class="score-table">
-              <thead>
-                <tr>
-                  <th class="col-item">평가 역량</th>
-                  <th class="col-score">점수</th>
-                  <th class="col-comment">기록</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="item-name">도전</span><span class="item-guide">새로운 환경 수용성, 자발적 행동력, 끊임없는 시도, 열정적 학습 태도</span></td>
-                  <td>
-                    <select class="score-select" data-score="challenge">
-                      <option value="">선택</option>
-                      <option value="10">10 (매우 우수)</option>
-                      <option value="8">8 (우수)</option>
-                      <option value="5">5 (미흡)</option>
-                      <option value="3">3 (매우 미흡)</option>
-                    </select>
-                  </td>
-                  <td>
-                    <div class="star-fields">
-                      <div class="star-field"><span class="star-label">질문</span><textarea id="challengeQuestion" name="challengeQuestion" placeholder="예: 스스로 문제를 발견하고 개선한 경험은? 주변에서 말리지만 시도해본 일은?"></textarea></div>
-                      <div class="star-field">
-                        <span class="star-label">답변</span>
-                        <textarea id="challengeAnswer" name="challengeAnswer" placeholder="지원자 답변 기재"></textarea>
-                        <div class="star-note">※ 지원자가 어떤 상황에서 어떻게 문제를 인식했고, 어떤 행동을 했으며, 그 결과와 배운 점 등은 무엇인지를 중심으로 기록</div>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><span class="item-name">연결</span><span class="item-guide">타 부서·동료와의 협업 경험, 조직 전체 관점에서의 사고, 외부에 대한 수용력</span></td>
-                  <td>
-                    <select class="score-select" data-score="connection">
-                      <option value="">선택</option>
-                      <option value="10">10 (매우 우수)</option>
-                      <option value="8">8 (우수)</option>
-                      <option value="5">5 (미흡)</option>
-                      <option value="3">3 (매우 미흡)</option>
-                    </select>
-                  </td>
-                  <td>
-                    <div class="star-fields">
-                      <div class="star-field"><span class="star-label">질문</span><textarea id="connectionQuestion" name="connectionQuestion" placeholder="예: 기존 방식이 아닌 외부 사례나 새로운 아이디어를 조직에 적용했던 경험은? 팀의 방향과 회사의 방향이 충돌했던 경험은?"></textarea></div>
-                      <div class="star-field">
-                        <span class="star-label">답변</span>
-                        <textarea id="connectionAnswer" name="connectionAnswer" placeholder="지원자 답변 기재"></textarea>
-                        <div class="star-note">※ 지원자가 어떤 상황에서 어떻게 문제를 인식했고, 어떤 행동을 했으며, 그 결과와 배운 점 등은 무엇인지를 중심으로 기록</div>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td><span class="item-name">존중</span><span class="item-guide">피드백 수용 태도, 갈등 대응 방식, 반대 의견 전달 방식, 자신의 오류 가능성을 인정하는 태도</span></td>
-                  <td>
-                    <select class="score-select" data-score="respect">
-                      <option value="">선택</option>
-                      <option value="10">10 (매우 우수)</option>
-                      <option value="8">8 (우수)</option>
-                      <option value="5">5 (미흡)</option>
-                      <option value="3">3 (매우 미흡)</option>
-                    </select>
-                  </td>
-                  <td>
-                    <div class="star-fields">
-                      <div class="star-field"><span class="star-label">질문</span><textarea id="respectQuestion" name="respectQuestion" placeholder="예: 나와 다른 의견이나 관점을 가진 사람과 일했던 경험은? 갈등이나 의견 충돌 상황에서 본인의 행동은?"></textarea></div>
-                      <div class="star-field">
-                        <span class="star-label">답변</span>
-                        <textarea id="respectAnswer" name="respectAnswer" placeholder="지원자 답변 기재"></textarea>
-                        <div class="star-note">※ 지원자가 어떤 상황에서 어떻게 문제를 인식했고, 어떤 행동을 했으며, 그 결과와 배운 점 등은 무엇인지를 중심으로 기록</div>
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-            <div class="field" style="margin-top: 10px;">
-              <label style="font-size: 13px; font-weight: 800; color: rgb(39,54,70);">조직 적합도 종합 평가</label>
-              <textarea id="orgFitSummary" name="orgFitSummary" style="min-height: 90px;" placeholder="예: oo한 경험에서 지원자의 끊임없는 학구열과 발전 가능성을 통해 강한 도전 정신을 보았으나, 그 과정에서 주변 사람들과의 갈등을 제대로 해결하지 못한 점은 존중 측면에서 아쉬움."></textarea>
-            </div>
-          </div>
-
-          <div class="eval-category" style="margin-bottom: 16px;">
-            <div class="eval-category-label">인터뷰 총평</div>
-            <table class="score-table" style="border-radius: 0 0 12px 12px;">
-              <tbody>
-                <tr>
-                  <td style="width: 22%; background: rgba(0,191,182,0.06); font-weight: 800; color: rgb(39,54,70); vertical-align: top;">
-                    <span class="item-name">좋은 Point</span>
-                  </td>
-                  <td><textarea id="strengths" name="strengths" placeholder="인터뷰를 통해 보여준 지원자의 강점, 좋은 면모 등" style="min-height: 80px;"></textarea></td>
-                </tr>
-                <tr>
-                  <td style="width: 22%; background: rgba(0,191,182,0.06); font-weight: 800; color: rgb(39,54,70); vertical-align: top;">
-                    <span class="item-name">우려 사항</span>
-                  </td>
-                  <td><textarea id="concerns" name="concerns" placeholder="지원자의 리스크 또는 다음 인터뷰에서 더 확인하거나 재확인하고 싶은 점들" style="min-height: 80px;"></textarea></td>
-                </tr>
-                <tr>
-                  <td style="width: 22%; background: rgba(0,191,182,0.06); font-weight: 800; color: rgb(39,54,70); vertical-align: top;">
-                    <span class="item-name">종합 평가</span>
-                  </td>
-                  <td><textarea id="overallComment" name="overallComment" placeholder="인터뷰 전반에 대한 종합적 평가" style="min-height: 80px;"></textarea></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-          <div class="field" style="margin-top: 18px;">
-            <label>인터뷰 결과</label>
-            <div class="decision-group">
-              <div class="decision-option pass">
-                <input id="decisionPass" name="decision" type="radio" value="합격" />
-                <label for="decisionPass">합격</label>
-              </div>
-              <div class="decision-option hold">
-                <input id="decisionHold" name="decision" type="radio" value="보류" />
-                <label for="decisionHold">보류</label>
-              </div>
-              <div class="decision-option fail">
-                <input id="decisionFail" name="decision" type="radio" value="불합격" />
-                <label for="decisionFail">불합격</label>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <aside class="sticky-box">
-        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px;">
-          <section class="stat-card" style="margin-bottom: 0;">
-            <div class="stat-label">인터뷰 결과</div>
-            <div id="resultSummary" class="stat-value" style="font-size: 28px;">-</div>
-          </section>
-
-          <section class="stat-card" style="margin-bottom: 0;">
-            <div class="stat-label">평균 점수</div>
-            <div style="display: flex; align-items: baseline; gap: 6px;">
-              <div id="averageScore" class="stat-value">0.0</div>
-              <span style="font-size: 14px; font-weight: 700; color: rgb(39,54,70);">/ 10점</span>
-            </div>
-          </section>
-        </div>
-
-        <section class="stat-card">
-          <div class="section-title" style="margin-bottom: 14px;">항목별 평균 점수</div>
-          <div class="summary-list">
-            <div class="summary-item">
-              <div class="label" style="font-size: 17px;">직무 역량</div>
-              <div id="avgJobScore" class="value" style="font-size: 21px;">0.0</div>
-            </div>
-            <div class="summary-item">
-              <div class="label" style="font-size: 17px;">커리어 적합도</div>
-              <div id="avgCareerScore" class="value" style="font-size: 21px;">0.0</div>
-            </div>
-            <div class="summary-item">
-              <div class="label" style="font-size: 17px;">조직 적합도</div>
-              <div id="avgOrgScore" class="value" style="font-size: 21px;">0.0</div>
-            </div>
-          </div>
-
-          <div class="actions">
-            <button id="downloadPdfBtn" class="btn-primary" type="button">PDF 다운로드</button>
-            <button id="resetBtn" class="btn-ghost" type="button">초기화</button>
-          </div>
-          <div class="save-note" style="color: #dc2626; font-weight: 700; background: rgba(220,38,38,0.08); border-color: rgba(220,38,38,0.2);">
-            누락된 평가 기록이 있으면 PDF 다운로드가 불가능합니다. 모든 항목이 빠짐없이 기록되었는지 확인해주세요.
-          </div>
-          <div id="statusMessage" class="status"></div>
-        </section>
-      </aside>
+<section class="section">
+    <h2 class="section-title">기본 정보</h2>
+    <div class="info-grid">
+      <div class="input-group"><label class="label">계열사명</label><input type="text" class="input" placeholder="예 : 상상인, 시너지이노베이션"></div>
+      <div class="input-group"><label class="label">면접관명</label><input type="text" class="input" placeholder="예 : 정상상 팀장"></div>
+      <div class="input-group"><label class="label">면접일자</label><input type="date" id="interviewDate" class="input"></div>
+      
+      <div class="input-group"><label class="label">지원부서(팀) / 직무</label><input type="text" class="input" placeholder="예 : 플랫폼개발팀/프론트엔드 개발"></div>
+ <div class="input-group"><label class="label">지원자명</label><input type="text" class="input" placeholder="예 : 박최선"></div>
+     <div class="input-group">
+  <label class="label">신입 / 경력</label>
+  <div class="checkbox-container-box"> <div class="checkbox-group">
+      <label class="checkbox-item">
+        <input type="checkbox" name="type" value="신입"> <span>신입</span>
+      </label>
+      <label class="checkbox-item">
+        <input type="checkbox" name="type" value="경력"> <span>경력</span>
+      </label>
     </div>
   </div>
+</div>
+  </section>
 
-  <div class="pdf-stage">
-    <div id="pdfSheet" class="pdf-sheet"></div>
-  </div>
+<section class="section">
+  <h2 class="section-title">직무 역량 및 커리어 적합성</h2>
+  <p class="section-desc">포지션에 대한 지원자의 핵심 경험과 역량, 커리어 흐름 및 방향, 이직 사유 등 전반을 확인하고 평가합니다.</p>
 
-  <script>
-    const STORAGE_KEY = 'interview-evaluation-form-v1';
-    const scoreFields = [
-      // 직무 역량
-      { key: 'jobUnderstanding', label: '직무 이해도', category: '직무 역량' },
-      { key: 'jobExpertise', label: '직무 전문성', category: '직무 역량' },
-      { key: 'problemSolving', label: '문제 해결력', category: '직무 역량' },
-      // 커리어 적합도
-      { key: 'careerFit', label: '커리어 적합성', category: '커리어 적합도' },
-      { key: 'careerGrowth', label: '커리어 발전 방향', category: '커리어 적합도' },
-      { key: 'turnoverReason', label: '이직 사유', category: '커리어 적합도' },
-      // 조직 적합도
-      { key: 'challenge', label: '도전', category: '조직 적합도' },
-      { key: 'connection', label: '연결', category: '조직 적합도' },
-      { key: 'respect', label: '존중', category: '조직 적합도' }
-    ];
+  <div class="fit-item">
+    <div class="fit-header">
+      <div class="fit-name">01. 커리어 전문성 및 흐름</div>
+      <div class="rating-group">
+        <button type="button" class="btn-rating" onclick="selectRating(this, '탁월')">탁월</button>
+        <button type="button" class="btn-rating" onclick="selectRating(this, '충족')">충족</button>
+        <button type="button" class="btn-rating" onclick="selectRating(this, '미흡')">미흡</button>
+      </div>
+    </div>
+    <div class="reference-area">
+      <div class="ref-pill">
+        <span class="badge-ref badge-criteria"> 평가 기준</span>
+        <span>포지션과 연관된 지원자만의 핵심 역량/전문성/특장점, 특정 프로젝트 경험에 대한 깊이 등</span>
+      </div>
+    </div>
+    <div class="qa-container">
+      <div class="qa-row">
+        <span class="badge-qa badge-q"> 답변 및 평가  </span>
+        <textarea class="textarea" style="min-height:90px;"></textarea>
+      </div>
+    </div>
+  </div> <div class="fit-item">
+    <div class="fit-header">
+      <div class="fit-name">02. 이직 동기 및 방향성</div>
+      <div class="rating-group">
+        <button type="button" class="btn-rating" onclick="selectRating(this, '탁월')">탁월</button>
+        <button type="button" class="btn-rating" onclick="selectRating(this, '충족')">충족</button>
+        <button type="button" class="btn-rating" onclick="selectRating(this, '미흡')">미흡</button>
+      </div>
+    </div>
+    <div class="reference-area">
+      <div class="ref-pill">
+        <span class="badge-ref badge-criteria">평가 기준</span>
+        <span>근무처별 이직 사유의 타당성, 지원자가 지향하는 커리어 방향 등</span>
+      </div>
+    </div>
+    <div class="qa-container">
+      <div class="qa-row">
+        <span class="badge-qa badge-q">답변 및 평가</span>
+        <textarea class="textarea" style="min-height:90px;"></textarea>
+      </div>
+    </div>
+  </div> <div class="fit-item">
+    <div class="fit-header">
+      <div class="fit-name">03. 업무 성향 및 커뮤니케이션 스타일</div>
+      <div class="rating-group">
+        <button type="button" class="btn-rating" onclick="selectRating(this, '탁월')">탁월</button>
+        <button type="button" class="btn-rating" onclick="selectRating(this, '충족')">충족</button>
+        <button type="button" class="btn-rating" onclick="selectRating(this, '미흡')">미흡</button>
+      </div>
+    </div>
+    <div class="reference-area">
+      <div class="ref-pill">
+        <span class="badge-ref badge-criteria">평가 기준</span>
+        <span>업무 추진 및 조율 방식, 업무 리포팅 습관 및 갈등 해결 방법과 같은 다양한 실무적 소통 역량</span>
+      </div>
+    </div>
+    <div class="qa-container">
+      <div class="qa-row">
+        <span class="badge-qa badge-q">답변 및 평가</span>
+        <textarea class="textarea" style="min-height:90px;"></textarea>
+      </div>
+    </div>
+  </div> </section>
 
-    const formIds = [
-      'affiliateName', 'interviewerName', 'interviewDate',
-      'targetDeptJob', 'careerType', 'candidateName',
-      'availableDate', 'currentSalary', 'desiredSalary',
-      'challengeQuestion', 'challengeAnswer',
-      'connectionQuestion', 'connectionAnswer',
-      'respectQuestion', 'respectAnswer',
-      'orgFitSummary',
-      'strengths', 'concerns', 'overallComment'
-    ];
+  <section class="section">
+    <h2 class="section-title">조직 적합성 평가</h2>
+    <p class="section-desc">상상인그룹의 Core Value 3개와 Winning Rules 9개를 기준으로 지원자를 평가합니다.
+<br><font color= #1976d2;>※ 답변 기록은 "지원자가 어떤 상황에서 어떻게 문제를 인식했고, 어떤 행동을 했으며, 그 결과와 배운 점 등은 무엇인지를 중심"으로 기록합니다.</p></font color= #1976d2;>
 
-    function pad(value) {
-      return String(value).padStart(2, '0');
+    <div class="fit-item">
+      <div class="fit-header">
+        <div class="fit-name">01. 도전</div>
+        <div class="rating-group">
+          <button type="button" class="btn-rating" onclick="selectRating(this, '탁월')">탁월</button>
+          <button type="button" class="btn-rating" onclick="selectRating(this, '충족')">충족</button>
+          <button type="button" class="btn-rating" onclick="selectRating(this, '미흡')">미흡</button>
+        </div>
+      </div>
+      <div class="reference-area">
+        <div class="ref-pill"><span class="badge-ref badge-criteria">평가 기준</span><span>새로운 환경 수용성, 자발적 행동력, 끊임없는 시도, 열정적 학습 태도</span></div>
+        <div class="ref-pill"><span class="badge-ref badge-question">추천 질문</span><span>아무도 문제라고 생각하지 않았는데 본인은 그냥 지나칠 수 없었던 일이 있었는지? / 완성도와 속도 중에 하나를 선택했던 경험은?</span></div>
+      </div>
+      <div class="qa-container">
+        <div class="qa-row"><span class="badge-qa badge-q">질문</span><input type="text" class="input" placeholder="실제 던진 질문 기록"></div>
+        <div class="qa-row"><span class="badge-qa badge-a">답변</span><textarea class="textarea" style="min-height:90px;" placeholder="지원자의 답변 핵심 내용 기록"></textarea></div>
+      </div>
+    </div>
+
+    <div class="fit-item">
+      <div class="fit-header">
+        <div class="fit-name">02. 연결</div>
+        <div class="rating-group">
+          <button type="button" class="btn-rating" onclick="selectRating(this, '탁월')">탁월</button>
+          <button type="button" class="btn-rating" onclick="selectRating(this, '충족')">충족</button>
+          <button type="button" class="btn-rating" onclick="selectRating(this, '미흡')">미흡</button>
+        </div>
+      </div>
+      <div class="reference-area">
+        <div class="ref-pill"><span class="badge-ref badge-criteria">평가 기준</span><span>타 부서·동료와의 협업 경험, 조직 전체 관점에서의 사고, 외부에 대한 수용력</span></div>
+        <div class="ref-pill"><span class="badge-ref badge-question">추천 질문</span><span>팀의 방향과 회사의 방향이 충돌했던 경험은? / 부서 간 이해관계가 충돌했던 경험은?</span></div>
+      </div>
+      <div class="qa-container">
+        <div class="qa-row"><span class="badge-qa badge-q">질문</span><input type="text" class="input" placeholder="실제 던진 질문 기록"></div>
+        <div class="qa-row"><span class="badge-qa badge-a">답변</span><textarea class="textarea" style="min-height:90px;" placeholder="지원자의 답변 핵심 내용 기록"></textarea></div>
+      </div>
+    </div>
+
+    <div class="fit-item">
+      <div class="fit-header">
+        <div class="fit-name">03. 존중</div>
+        <div class="rating-group">
+          <button type="button" class="btn-rating" onclick="selectRating(this, '탁월')">탁월</button>
+          <button type="button" class="btn-rating" onclick="selectRating(this, '충족')">충족</button>
+          <button type="button" class="btn-rating" onclick="selectRating(this, '미흡')">미흡</button>
+        </div>
+      </div>
+      <div class="reference-area">
+        <div class="ref-pill"><span class="badge-ref badge-criteria">평가 기준</span><span>피드백 수용 태도, 갈등 대응 방식, 반대 의견 전달 방식, 자신의 오류 인정 태도</span></div>
+        <div class="ref-pill"><span class="badge-ref badge-question">추천 질문</span><span>갈등 상황에서 본인의 소통 방식은? / 본인이 틀렸다는 걸 인정하기 가장 어려웠던 경험은?</span></div>
+      </div>
+      <div class="qa-container">
+        <div class="qa-row"><span class="badge-qa badge-q">질문</span><input type="text" class="input" placeholder="실제 던진 질문 기록"></div>
+        <div class="qa-row"><span class="badge-qa badge-a">답변</span><textarea class="textarea" style="min-height:90px;" placeholder="지원자의 답변 핵심 내용 기록"></textarea></div>
+      </div>
+    </div>
+  </section>
+
+<section class="section">
+    <h2 class="section-title">처우 및 입사 가능일</h2>
+    <div class="treatment-grid">
+      <div class="input-group">
+        <label class="label">현 처우</label>
+        <textarea class="textarea" style="min-height:80px;" placeholder="예 : 기본연봉 6,000만원, 식대 별도, 교통비 지원, 고정 상여금 연 300만원 등"></textarea>
+      </div>
+      <div class="input-group">
+        <label class="label">희망 처우</label>
+        <textarea class="textarea" style="min-height:80px;" placeholder="예 : 기본연봉 7,000만원 이상
+*지원자가 희망 처우에 대한 근거나 사유도 말했다면 함께 기재 바랍니다."></textarea>
+      </div>
+      <div class="input-group">
+        <label class="label">입사 가능일</label>
+        <textarea class="textarea" style="min-height:80px;" placeholder="예 : 오퍼 후 4주"></textarea>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="section" style="border: 2px solid var(--primary);">
+    <h2 class="section-title">최종 평가</h2>
+    
+    <div class="decision-group" id="decisionGroup">
+      <button type="button" class="btn-decision" data-type="recommend" onclick="setDecision('recommend')">추천</button>
+      <button type="button" class="btn-decision" data-type="hold" onclick="setDecision('hold')">보류</button>
+      <button type="button" class="btn-decision" data-type="reject" onclick="setDecision('reject')">비추천</button>
+      <input type="hidden" id="finalDecision" value="">
+    </div>
+
+    <div class="qa-container">
+      <div class="input-group">
+        <label class="label">채용 사유</label>
+        <textarea class="textarea" style="min-height:80px;" placeholder="예 : 지원자가 포지션에 적합한 핵심 이유, 지원자만의 강점 등"></textarea>
+      </div>
+      <div class="input-group">
+        <label class="label">우려 사항</label>
+        <textarea class="textarea" style="min-height:80px;" placeholder="예 : 지원자가 보유한 리스크, 다음 인터뷰에서 추가 확인 또는 재확인하고 싶은 점 등"></textarea>
+      </div>
+      <div class="input-group">
+        <label class="label">종합 평가</label>
+        <textarea class="textarea" style="min-height:100px; font-weight:500;" placeholder="지원자에 대한 총평"></textarea>
+      </div>
+    </div>
+  </section>
+
+</div>
+<script>
+const STORAGE_KEY = 'ssg_interview_v8';
+
+function setMaxDate() {
+  const today = new Date().toISOString().split('T')[0];
+  const dateInput = document.getElementById('interviewDate');
+  if(dateInput) dateInput.setAttribute('max', today);
+}
+
+function selectRating(button, value) {
+  const group = button.parentElement;
+  group.querySelectorAll('.btn-rating').forEach(btn => {
+    btn.classList.remove('active', 'excellent', 'good', 'poor');
+  });
+
+  button.classList.add('active');
+  if (value === '탁월') button.classList.add('excellent');
+  else if (value === '충족') button.classList.add('good');
+  else if (value === '미흡') button.classList.add('poor');
+  
+  save(); 
+}
+
+// --- 위로 돌아가기 버튼 기능 (수정됨) ---
+window.addEventListener('scroll', () => {
+  const backToTop = document.getElementById('backToTop');
+  if (backToTop) {
+    if (window.pageYOffset > 300) {
+      backToTop.style.display = 'flex';
+    } else {
+      backToTop.style.display = 'none';
     }
+  }
+});
 
-    function todayDateString() {
-      const now = new Date();
-      return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+function setDecision(type) {
+  const decisionGroup = document.querySelector('.decision-group');
+  if(!decisionGroup) return;
+
+  decisionGroup.querySelectorAll('.btn-decision').forEach(btn => btn.classList.remove('active'));
+  const target = document.querySelector(`.btn-decision[data-type="${type}"]`);
+  if (target) target.classList.add('active');
+  
+  document.getElementById('finalDecision').value = type;
+  save();
+}
+
+function validateAndPrint() {
+  let isValid = true;
+  let firstError = null;
+
+  // 1. 모든 텍스트/날짜 입력값 확인 (placeholder는 값으로 치지 않음)
+  const textInputs = document.querySelectorAll('input[type="text"], input[type="date"], textarea');
+  textInputs.forEach(el => {
+    if (!el.value.trim()) {
+      isValid = false;
+      el.style.borderColor = 'var(--danger)';
+      if (!firstError) firstError = el;
+    } else {
+      el.style.borderColor = 'var(--line)';
     }
+  });
 
-    function emptyToDash(text) {
-      return text && String(text).trim() ? String(text).trim() : '-';
+  // 2. 체크박스 확인 (신입/경력)
+  const checkboxes = document.querySelectorAll('input[name="type"]');
+  const checkboxBox = document.querySelector('.checkbox-container-box');
+  if (!Array.from(checkboxes).some(c => c.checked)) {
+    isValid = false;
+    checkboxBox.style.borderColor = 'var(--danger)';
+    if (!firstError) firstError = checkboxBox;
+  } else {
+    checkboxBox.style.borderColor = 'var(--line)';
+  }
+
+  // 3. 등급 선택 확인 (탁월/충족/미흡)
+  const ratingGroups = document.querySelectorAll('.rating-group');
+  ratingGroups.forEach(group => {
+    if (!group.querySelector('.btn-rating.active')) {
+      isValid = false;
+      group.closest('.fit-item').style.borderColor = 'var(--danger)';
+      if (!firstError) firstError = group;
+    } else {
+      group.closest('.fit-item').style.borderColor = 'var(--line)';
     }
+  });
 
-    function getDecisionValue() {
-      const selected = document.querySelector('input[name="decision"]:checked');
-      return selected ? selected.value : '';
+  // 4. 최종 추천 여부 확인
+  if (!document.getElementById('finalDecision').value) {
+    isValid = false;
+    const dGroup = document.getElementById('decisionGroup');
+    dGroup.style.outline = '2px solid var(--danger)';
+    if (!firstError) firstError = dGroup;
+  } else {
+    document.getElementById('decisionGroup').style.outline = 'none';
+  }
+
+  if (!isValid) {
+    alert("모든 항목을 입력해야 PDF 다운로드가 가능합니다.");
+    if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  window.print();
+}
+
+function save() {
+  const data = {};
+  document.querySelectorAll('input, textarea, select').forEach((el, i) => {
+    if (el.type === 'checkbox') {
+      data[`chk_${i}`] = el.checked;
+    } else {
+      data[i] = el.value;
     }
-
-    function setStatus(message, kind) {
-      const el = document.getElementById('statusMessage');
-      if (!el) return;
-      if (!message) {
-        el.textContent = '';
-        el.className = 'status';
-        return;
-      }
-      el.textContent = message;
-      el.className = 'status' + (kind === 'ok' ? ' ok' : kind === 'error' ? ' error' : '');
+  });
+  
+  const ratings = {};
+  document.querySelectorAll('.rating-group').forEach((group, index) => {
+    const activeBtn = group.querySelector('.btn-rating.active');
+    if (activeBtn) {
+      ratings[index] = activeBtn.innerText;
     }
+  });
+  data['ratings'] = ratings;
 
-    function getFormData() {
-      const data = {};
-      formIds.forEach((id) => {
-        data[id] = document.getElementById(id).value.trim();
-      });
+  const activeDecision = document.querySelector('.btn-decision.active');
+  if (activeDecision) {
+    data['final_decision'] = activeDecision.getAttribute('data-type');
+  }
+  
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  const now = new Date();
+  const statusEl = document.getElementById('saveStatus');
+  if(statusEl) statusEl.innerText = `마지막 저장: ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+}
 
-      scoreFields.forEach(({ key }) => {
-        const scoreElement = document.querySelector(`[data-score="${key}"]`);
-        const commentElement = document.querySelector(`[data-comment="${key}Comment"]`);
-        data[key] = scoreElement ? scoreElement.value : '';
-        data[`${key}Comment`] = commentElement ? commentElement.value.trim() : '';
-      });
-
-      data.decision = getDecisionValue();
-      return data;
+function load() {
+  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  document.querySelectorAll('input, textarea, select').forEach((el, i) => {
+    if (el.type === 'checkbox') {
+      if (saved[`chk_${i}`] !== undefined) el.checked = saved[`chk_${i}`];
+    } else {
+      if (saved[i] !== undefined) el.value = saved[i];
     }
-
-    function setFormData(data) {
-      if (!data || typeof data !== 'object') return;
-
-      formIds.forEach((id) => {
-        const element = document.getElementById(id);
-        if (element && data[id] !== undefined) element.value = data[id];
-      });
-
-      scoreFields.forEach(({ key }) => {
-        const scoreElement = document.querySelector(`[data-score="${key}"]`);
-        const commentElement = document.querySelector(`[data-comment="${key}Comment"]`);
-        if (scoreElement && data[key] !== undefined) scoreElement.value = data[key];
-        if (commentElement && data[`${key}Comment`] !== undefined) commentElement.value = data[`${key}Comment`];
-      });
-
-      if (data.decision) {
-        const radio = document.querySelector(`input[name="decision"][value="${data.decision}"]`);
-        if (radio) radio.checked = true;
-      }
-    }
-
-    function calculateAverage() {
-      const values = scoreFields
-        .map(({ key }) => Number(document.querySelector(`[data-score="${key}"]`).value))
-        .filter((value) => Number.isFinite(value) && value > 0);
-
-      if (!values.length) return 0;
-      const total = values.reduce((sum, current) => sum + current, 0);
-      return total / values.length;
-    }
-
-    function calculateCategoryAverage(category) {
-      const values = scoreFields
-        .filter(f => f.category === category)
-        .map(({ key }) => Number(document.querySelector(`[data-score="${key}"]`).value))
-        .filter((value) => Number.isFinite(value) && value > 0);
-
-      if (!values.length) return 0;
-      const total = values.reduce((sum, current) => sum + current, 0);
-      return total / values.length;
-    }
-
-    function updateSummary() {
-      const data = getFormData();
-      const avg = calculateAverage();
-
-      document.getElementById('averageScore').textContent = avg ? avg.toFixed(1) : '0.0';
-      
-      // Calculate category averages
-      const avgJob = calculateCategoryAverage('직무 역량');
-      const avgCareer = calculateCategoryAverage('커리어 적합도');
-      const avgOrg = calculateCategoryAverage('조직 적합도');
-      
-      document.getElementById('avgJobScore').textContent = avgJob ? avgJob.toFixed(1) : '0.0';
-      document.getElementById('avgCareerScore').textContent = avgCareer ? avgCareer.toFixed(1) : '0.0';
-      document.getElementById('avgOrgScore').textContent = avgOrg ? avgOrg.toFixed(1) : '0.0';
-
-      // 결과 Summary 업데이트
-      const resultVal = getDecisionValue();
-      const resEl = document.getElementById('resultSummary');
-      if (resEl) {
-        resEl.textContent = resultVal || '-';
-        if (resultVal === '합격') resEl.style.color = 'var(--good)';
-        else if (resultVal === '보류') resEl.style.color = 'var(--warn)';
-        else if (resultVal === '불합격') resEl.style.color = 'var(--bad)';
-        else resEl.style.color = 'var(--brand-dark)';
-      }
-    }
-
-    function saveDraft(showMessage = true) {
-      const data = getFormData();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      if (showMessage) setStatus('임시 저장이 완료되었습니다.', 'ok');
-      updateSummary();
-    }
-
-    function loadDraft() {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (!saved) {
-        document.getElementById('interviewDate').value = todayDateString();
-        updateSummary();
-        return;
-      }
-
-      try {
-        const parsed = JSON.parse(saved);
-        setFormData(parsed);
-      } catch (error) {
-        console.error(error);
-      }
-
-      if (!document.getElementById('interviewDate').value) {
-        document.getElementById('interviewDate').value = todayDateString();
-      }
-      updateSummary();
-    }
-
-    function resetForm() {
-      if (!confirm('입력한 내용을 모두 초기화할까요?')) return;
-      localStorage.removeItem(STORAGE_KEY);
-
-      formIds.forEach((id) => {
-        const element = document.getElementById(id);
-        if (!element) return;
-        if (id === 'interviewDate') {
-          element.value = todayDateString();
-        } else {
-          element.value = '';
+  });
+  
+  if (saved['ratings']) {
+    document.querySelectorAll('.rating-group').forEach((group, index) => {
+      const val = saved['ratings'][index];
+      if (val) {
+        const btn = Array.from(group.querySelectorAll('.btn-rating')).find(b => b.innerText === val);
+        if (btn) {
+          btn.classList.add('active');
+          if (val === '탁월') btn.classList.add('excellent');
+          else if (val === '충족') btn.classList.add('good');
+          else if (val === '미흡') btn.classList.add('poor');
         }
-      });
-
-      scoreFields.forEach(({ key }) => {
-        const scoreElement = document.querySelector(`[data-score="${key}"]`);
-        const commentElement = document.querySelector(`[data-comment="${key}Comment"]`);
-        if (scoreElement) scoreElement.value = '';
-        if (commentElement) commentElement.value = '';
-      });
-
-      document.querySelectorAll('input[name="decision"]').forEach((radio) => {
-        radio.checked = false;
-      });
-
-      updateSummary();
-      setStatus('초기화가 완료되었습니다.', 'ok');
-    }
-
-    function escapeHtml(text) {
-      return String(text || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    function getDecisionBadge(decision) {
-      return decision ? decision : '-';
-    }
-
-    function isPlaceholder(text) {
-      if (!text) return true;
-      const trimmed = text.trim();
-      if (!trimmed) return true;
-      // 예시, 예: 로 시작하는 플레이스홀더 감지
-      if (/^(예|예:|예시)\s/.test(trimmed)) return true;
-      // 지원자 답변 기재 같은 기본 플레이스홀더 감지
-      if (trimmed === '지원자 답변 기재') return true;
-      return false;
-    }
-
-    function validateRequired(data) {
-      if (!data.affiliateName) return '계열사명을 입력해 주세요.';
-      if (!data.interviewerName) return '인터뷰관명을 입력해 주세요.';
-      if (!data.candidateName) return '지원자명을 입력해 주세요.';
-      if (!data.targetDeptJob) return '지원부서(팀) / 직무를 입력해 주세요.';
-      if (!data.interviewDate) return '인터뷰일자를 선택해 주세요.';
-      if (!data.careerType) return '신입 / 경력 구분을 입력해 주세요.';
-      if (!data.availableDate) return '입사가능일을 입력해 주세요.';
-      if (!data.currentSalary) return '현재 처우를 입력해 주세요.';
-      if (!data.desiredSalary) return '희망 처우를 입력해 주세요.';
-      
-      // 9개 평가 항목 점수 및 의견 검증
-      const scoreKeys = ['jobUnderstanding', 'jobExpertise', 'problemSolving', 'careerFit', 'careerGrowth', 'turnoverReason', 'challenge', 'connection', 'respect'];
-      for (const key of scoreKeys) {
-        if (!data[key]) return '모든 평가 항목의 점수를 선택해 주세요.';
-        
-        // 조직 적합도 STAR 답변 검증 (도전, 연결, 존중)
-        if (['challenge', 'connection', 'respect'].includes(key)) {
-          if (isPlaceholder(data[`${key}Question`])) return `${key === 'challenge' ? '도전' : key === 'connection' ? '연결' : '존중'} 항목의 질문을 입력해 주세요.`;
-          if (isPlaceholder(data[`${key}Answer`])) return `${key === 'challenge' ? '도전' : key === 'connection' ? '연결' : '존중'} 항목의 답변을 입력해 주세요.`;
-        } else {
-          // 직무 역량 및 커리어 적합도 평가 의견 검증
-          if (isPlaceholder(data[`${key}Comment`])) {
-            const label = scoreFields.find(f => f.key === key)?.label;
-            return `[${label}] 평가 의견을 입력해 주세요.`;
-          }
-        }
       }
-
-      // 인터뷰 총평 검증
-      if (isPlaceholder(data.strengths)) return '좋은 Point를 입력해 주세요.';
-      if (isPlaceholder(data.concerns)) return '우려 사항을 입력해 주세요.';
-      if (isPlaceholder(data.overallComment)) return '종합 평가를 입력해 주세요.';
-      
-      // 조직 적합도 종합 평가 검증
-      if (isPlaceholder(data.orgFitSummary)) return '조직 적합도 종합 평가를 입력해 주세요.';
-      
-      if (!data.decision) return '인터뷰 결과를 선택해 주세요.';
-      return '';
-    }
-
-    function buildPdfHtml(data) {
-      const average = calculateAverage();
-      const avgJob = calculateCategoryAverage('직무 역량');
-      const avgCareer = calculateCategoryAverage('커리어 적합도');
-      const avgOrg = calculateCategoryAverage('조직 적합도');
-
-      // 1. 항목별 평가 섹션 생성 (웹과 동일한 구성)
-      const categorySections = ['직무 역량', '커리어 적합도', '조직 적합도'].map(cat => {
-        const items = scoreFields.filter(f => f.category === cat);
-        const rows = items.map(({ key, label }) => {
-            // 웹페이지의 설명 문구(item-guide) 매핑
-            const guides = {
-                'jobUnderstanding': '실무 지식, 숙련도, 트렌드 이해도',
-                'jobExpertise': '직무의 실질적 수행 내용(깊이, 과업, 결과 기반)',
-                'problemSolving': '구조적/단계적 사고와 대응력, 문제 접근 방식',
-                'careerFit': '지금까지의 커리어와 이번 포지션의 연결성, 유사성',
-                'careerGrowth': '희망하는 성장 목표와 조직의 연결성, 일치성',
-                'turnoverReason': '이직 사유의 타당성, 반복/회피/도피성 여부',
-                'challenge': '새로운 환경 수용성, 자발적 행동력, 끊임없는 시도, 열정적 학습 태도',
-                'connection': '타 부서·동료와의 협업 경험, 조직 전체 관점에서의 사고, 외부에 대한 수용력',
-                'respect': '피드백 수용 태도, 갈등 대응 방식, 반대 의견 전달 방식, 자신의 오류 가능성을 인정하는 태도'
-            };
-
-            let recordHtml = '';
-            if (['challenge', 'connection', 'respect'].includes(key)) {
-                recordHtml = `
-                    <div style="margin-bottom:4px;"><strong>질문:</strong> ${escapeHtml(data[key + 'Question'] || '-')}</div>
-                    <div><strong>답변:</strong> ${escapeHtml(data[key + 'Answer'] || '-')}</div>
-                `;
-            } else {
-                recordHtml = escapeHtml(data[key + 'Comment'] || '-');
-            }
-
-            return `
-              <tr style="page-break-inside: avoid;">
-                <td style="width: 130px; vertical-align: top;">
-                    <div style="font-weight: 800; color: rgb(39,54,70); font-size: 11px;">${label}</div>
-                    <div style="font-size: 9px; color: #5f6e78; line-height: 1.3; margin-top: 2px;">${guides[key] || ''}</div>
-                </td>
-                <td style="width: 55px; text-align: center; font-weight: 800; color: rgb(39,54,70); font-size: 13px; vertical-align: top;">${escapeHtml(data[key] || '-')}</td>
-                <td style="font-size: 11px; line-height: 1.5; vertical-align: top;">${recordHtml}</td>
-              </tr>
-            `;
-        }).join('');
-        
-        return `
-          <div class="eval-category-pdf-wrapper" style="margin-top: 14px; page-break-inside: avoid;">
-            <div style="font-size: 13px; font-weight: 900; color: rgb(39,54,70); padding: 8px 12px; background: rgba(0,191,182,0.12); border: 1px solid rgba(0,191,182,0.2); border-bottom: none; border-radius: 8px 8px 0 0;">${cat}</div>
-            <table class="pdf-score">
-              <thead>
-                <tr>
-                  <th style="width: 130px;">평가 역량</th>
-                  <th style="width: 55px;">점수</th>
-                  <th>평가 의견</th>
-                </tr>
-              </thead>
-              <tbody>${rows}</tbody>
-            </table>
-          </div>
-        `;
-      }).join('');
-
-      // 2. 조직 적합도 종합 평가 (웹에만 있던 항목 추가)
-      const orgFitSummaryHtml = `
-        <div class="pdf-section" style="page-break-inside: avoid;">조직 적합도 종합 평가</div>
-        <div class="pdf-box" style="min-height: 60px; page-break-inside: avoid;">${escapeHtml(data.orgFitSummary || '-')}</div>
-      `;
-
-      // 3. 우측 사이드바 카드덱 구성 (최하단용)
-      const statsCardsHtml = `
-        <div class="pdf-section" style="page-break-inside: avoid;">평가 요약</div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; page-break-inside: avoid;">
-            <div class="pdf-highlight-card" style="text-align: center;">
-                <div class="caption">최종 인터뷰 결과</div>
-                <div class="value" style="font-size: 24px;">${escapeHtml(data.decision || '-')}</div>
-            </div>
-            <div class="pdf-highlight-card score" style="text-align: center;">
-                <div class="caption">전체 평균 점수</div>
-                <div class="value">${average ? average.toFixed(1) : '0.0'}<span style="font-size: 14px;"> / 10.0</span></div>
-            </div>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; page-break-inside: avoid;">
-            <div class="pdf-highlight-card" style="text-align: center; padding: 10px;">
-                <div class="caption" style="margin-bottom:4px;">직무 역량 평균</div>
-                <div class="value" style="font-size: 18px;">${avgJob ? avgJob.toFixed(1) : '0.0'}</div>
-            </div>
-            <div class="pdf-highlight-card" style="text-align: center; padding: 10px;">
-                <div class="caption" style="margin-bottom:4px;">커리어 적합도 평균</div>
-                <div class="value" style="font-size: 18px;">${avgCareer ? avgCareer.toFixed(1) : '0.0'}</div>
-            </div>
-            <div class="pdf-highlight-card" style="text-align: center; padding: 10px;">
-                <div class="caption" style="margin-bottom:4px;">조직 적합도 평균</div>
-                <div class="value" style="font-size: 18px;">${avgOrg ? avgOrg.toFixed(1) : '0.0'}</div>
-            </div>
-        </div>
-      `;
-
-      return `
-        <div class="pdf-brandbar">
-          <div class="pdf-brand-row">
-            <div>
-              <div class="pdf-brand-mark">SANGSANGIN GROUP</div>
-              <div class="pdf-title">상상인그룹 인터뷰 평가 기록</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="pdf-content">
-          <table class="pdf-meta">
-            <tr>
-              <th>계열사명</th><td>${escapeHtml(data.affiliateName)}</td>
-              <th>인터뷰관명</th><td>${escapeHtml(data.interviewerName)}</td>
-              <th>면접일자</th><td>${escapeHtml(data.interviewDate || '-')}</td>
-            </tr>
-            <tr>
-              <th>지원부서(팀) / 직무</th><td>${escapeHtml(data.targetDeptJob)}</td>
-              <th>신입 / 경력</th><td>${escapeHtml(data.careerType)}</td>
-              <th>지원자명</th><td>${escapeHtml(data.candidateName)}</td>
-            </tr>
-            <tr>
-              <th>입사가능일</th><td>${escapeHtml(data.availableDate || '-')}</td>
-              <th>현재 처우</th><td style="font-size: 11px;">${escapeHtml(data.currentSalary || '-')}</td>
-              <th>희망 처우</th><td style="font-size: 11px;">${escapeHtml(data.desiredSalary || '-')}</td>
-            </tr>
-          </table>
-
-          <div class="pdf-section">항목별 평가</div>
-          ${categorySections}
-          
-          ${orgFitSummaryHtml}
-
-          <div class="pdf-section">인터뷰 총평</div>
-          <table class="pdf-score" style="width: 100%; table-layout: fixed;">
-            <tbody>
-              <tr style="page-break-inside: avoid;">
-                <td style="width: 140px; background: rgba(0,191,182,0.1); font-weight: 800; color: rgb(39,54,70); vertical-align: top; font-size: 11px;">좋은 Point</td>
-                <td style="background: #ffffff; font-size: 11px; line-height: 1.6;">${escapeHtml(data.strengths || '-')}</td>
-              </tr>
-              <tr style="page-break-inside: avoid;">
-                <td style="width: 140px; background: rgba(0,191,182,0.1); font-weight: 800; color: rgb(39,54,70); vertical-align: top; font-size: 11px;">우려 사항 / 추가 확인 사항</td>
-                <td style="background: #ffffff; font-size: 11px; line-height: 1.6;">${escapeHtml(data.concerns || '-')}</td>
-              </tr>
-              <tr style="page-break-inside: avoid;">
-                <td style="width: 140px; background: rgba(0,191,182,0.1); font-weight: 800; color: rgb(39,54,70); vertical-align: top; font-size: 11px;">종합 평가</td>
-                <td style="background: #ffffff; font-size: 11px; line-height: 1.6;">${escapeHtml(data.overallComment || '-')}</td>
-              </tr>
-            </tbody>
-          </table>
-
-          ${statsCardsHtml}
-
-          <div class="pdf-footer" style="border-top: 1px solid #d8e5e3; padding-top: 20px; text-align: center; margin-top: 30px; page-break-inside: avoid;">
-            <div style="display: inline-flex; align-items: center; justify-content: center; padding: 6px 16px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: 0.05em; background: rgba(39,54,70,0.05); border: 1px solid rgba(39,54,70,0.1); color: rgb(39,54,70); margin-bottom: 8px;">SANGSANGIN GROUP</div>
-            <div style="font-size: 13px; font-weight: 800; color: #273646; letter-spacing: -0.02em;">인재경영실 제작</div>
-          </div>
-        </div>
-      `;
-    }
-
-    function sanitizeForFileName(text) {
-      return String(text || '')
-        .trim()
-        .replace(/[\\/:*?"<>|]/g, '_')
-        .replace(/\s+/g, '_')
-        .slice(0, 50);
-    }
-
-    function buildFileName(data) {
-      const affiliate = sanitizeForFileName(data.affiliateName);
-      const deptJob = sanitizeForFileName(data.targetDeptJob);
-      const candidate = sanitizeForFileName(data.candidateName);
-      return `[면접평가표]${affiliate}_${deptJob}_${candidate}.pdf`;
-    }
-
-    async function downloadPdf() {
-      const data = getFormData();
-      const errorMessage = validateRequired(data);
-      if (errorMessage) {
-        setStatus(errorMessage, 'error');
-        return;
-      }
-
-      saveDraft(false);
-      setStatus('PDF를 생성하고 있습니다. 잠시만 기다려 주세요...', 'ok');
-
-      const pdfSheet = document.getElementById('pdfSheet');
-      pdfSheet.innerHTML = buildPdfHtml(data);
-
-      try {
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pageWidth = 210;
-        const pageHeight = 297;
-        
-        // 브라우저 기본 인쇄 기능을 활용한 정교한 페이지 분할 방식
-        const canvas = await html2canvas(pdfSheet, {
-          scale: 2,
-          useCORS: true,
-          backgroundColor: '#ffffff',
-          logging: false,
-          windowWidth: 800
-        });
-
-        const imgData = canvas.toDataURL('image/jpeg', 1.0);
-        const imgWidth = pageWidth;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        
-        // 요소별 위치를 계산하여 행 중간 잘림 방지
-        const elements = pdfSheet.querySelectorAll('.pdf-highlight-grid, .pdf-meta, .pdf-section, .eval-category-pdf-wrapper, .pdf-score tr, .pdf-box, .pdf-footer');
-        const pxToMm = (pageWidth / 800);
-        
-        let position = 0;
-        let heightLeft = imgHeight;
-
-        // 첫 페이지
-        pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-
-        // 추가 페이지 처리 시, 요소의 경계를 확인하여 최적의 절단 지점 계산
-        while (heightLeft > 0) {
-          pdf.addPage();
-          position -= pageHeight;
-          pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-        }
-
-        const fileName = buildFileName(data);
-        pdf.save(fileName);
-        setStatus('PDF 다운로드가 완료되었습니다.', 'ok');
-      } catch (err) {
-        console.error(err);
-        setStatus('PDF 생성 중 오류가 발생했습니다.', 'error');
-      }
-    }
-
-    function wireScoreAverageUpdates() {
-      const panel = document.querySelector('.panel-body');
-      if (!panel) return;
-      const onScoreFieldUpdate = (event) => {
-        if (!event.target.matches('.score-select') && !event.target.matches('input[name="decision"]')) return;
-        setStatus('', '');
-        saveDraft(false);
-      };
-      panel.addEventListener('change', onScoreFieldUpdate);
-      
-      // 라디오 버튼(인터뷰 결과) 변경 감지 추가
-      document.querySelectorAll('input[name="decision"]').forEach(radio => {
-        radio.addEventListener('change', () => {
-          saveDraft(false);
-        });
-      });
-    }
-
-    document.getElementById('downloadPdfBtn')?.addEventListener('click', () => {
-      void downloadPdf();
     });
-    document.getElementById('resetBtn')?.addEventListener('click', resetForm);
+  }
+  
+  if (saved['final_decision']) {
+    setDecision(saved['final_decision']);
+  }
+}
 
-    wireScoreAverageUpdates();
-    loadDraft();
+function resetForm() {
+  if (confirm('모든 내용을 초기화하시겠습니까?')) {
+    localStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  }
+}
 
-    // 면접일자: 오늘 이전만 선택 가능 (미래 날짜 선택 불가)
-    const interviewDateInput = document.getElementById('interviewDate');
-    if (interviewDateInput) {
-      const today = new Date().toISOString().split('T')[0];
-      interviewDateInput.setAttribute('max', today);
-    }
-  </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+window.addEventListener('DOMContentLoaded', () => {
+  setMaxDate();
+  load();
+  
+  // 버튼 클릭 이벤트 바인딩
+  const backToTop = document.getElementById('backToTop');
+  if(backToTop) {
+    backToTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+
+  document.querySelectorAll('input, textarea, select').forEach(el => {
+    el.addEventListener('input', save);
+  });
+});
+</script>
+<button id="backToTop" class="back-to-top" title="위로 돌아가기">
+  <span style="font-size: 20px; font-weight: bold;">↑</span>
+</button>
+
+<footer class="footer">
+  <p>Copyright © 2026 상상인그룹 인재경영실. All rights reserved. (v1.0)</p>
+</footer>
+</body>
+</html>
