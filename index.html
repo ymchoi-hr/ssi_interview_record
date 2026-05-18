@@ -109,11 +109,11 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: #222
 /* 활성화 시 공통 텍스트 색상 */
 .btn-rating.active { color: white; border-color: transparent; }
 
-/* 탁월: 민트 */
+/* 기대 이상: 민트 */
 .btn-rating.active.excellent { background: var(--primary); border-color: var(--primary); }
-/* 충족: 초록 */
+/* 기대 충족: 초록 */
 .btn-rating.active.good { background: var(--success); border-color: var(--success); }
-/* 미흡: 빨강 */
+/* 기대 미만: 빨강 */
 .btn-rating.active.poor { background: var(--danger); border-color: var(--danger); }
 
 .btn-rating:hover:not(.active) { background: #f0f4f4; color: var(--navy); }
@@ -296,21 +296,21 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: #222
 
 <section class="section">
   <h2 class="section-title">직무 역량 및 커리어 적합성</h2>
-  <p class="section-desc">포지션에 대한 지원자의 핵심 경험과 역량, 커리어 흐름 및 방향, 이직 사유 등 전반을 확인하고 평가합니다.</p>
+  <p class="section-desc">지원자의 핵심 경험과 역량, 커리어 흐름과 방향 등이 <strong>포지션에 필요한 수준과 비교하여 어느 정도인지 기대 수준을 평가</strong>합니다.</p>
 
   <div class="fit-item">
     <div class="fit-header">
       <div class="fit-name">01. 커리어 전문성 및 흐름</div>
       <div class="rating-group">
-        <button type="button" class="btn-rating" onclick="selectRating(this, '탁월')">탁월</button>
-        <button type="button" class="btn-rating" onclick="selectRating(this, '충족')">충족</button>
-        <button type="button" class="btn-rating" onclick="selectRating(this, '미흡')">미흡</button>
+        <button type="button" class="btn-rating" onclick="selectRating(this, '기대 이상')">기대 이상</button>
+        <button type="button" class="btn-rating" onclick="selectRating(this, '기대 충족')">기대 충족</button>
+        <button type="button" class="btn-rating" onclick="selectRating(this, '기대 미만')">기대 미만</button>
       </div>
     </div>
     <div class="reference-area">
       <div class="ref-pill">
         <span class="badge-ref badge-criteria"> 평가 기준</span>
-        <span>포지션과 연관된 지원자만의 핵심 역량/전문성/특장점, 특정 프로젝트 경험에 대한 깊이 등</span>
+        <span>어떤 강점이 반복되는가, 어떤 환경에서 성과를 냈는가, 전문성의 깊이는 어떤가, 실제 비즈니스 임팩트를 냈는가, 포지션과 연관된 핵심적 역량은 무엇인가 등</span>
       </div>
     </div>
     <div class="qa-container">
@@ -321,17 +321,17 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: #222
     </div>
   </div> <div class="fit-item">
     <div class="fit-header">
-      <div class="fit-name">02. 이직 동기 및 방향성</div>
+      <div class="fit-name">02. 방향성 및 이직 동기</div>
       <div class="rating-group">
-        <button type="button" class="btn-rating" onclick="selectRating(this, '탁월')">탁월</button>
-        <button type="button" class="btn-rating" onclick="selectRating(this, '충족')">충족</button>
-        <button type="button" class="btn-rating" onclick="selectRating(this, '미흡')">미흡</button>
+        <button type="button" class="btn-rating" onclick="selectRating(this, '기대 이상')">기대 이상</button>
+        <button type="button" class="btn-rating" onclick="selectRating(this, '기대 충족')">기대 충족</button>
+        <button type="button" class="btn-rating" onclick="selectRating(this, '기대 미만')">기대 미만</button>
       </div>
     </div>
     <div class="reference-area">
       <div class="ref-pill">
         <span class="badge-ref badge-criteria">평가 기준</span>
-        <span>근무처별 이직 사유의 타당성, 지원자가 지향하는 커리어 방향 등</span>
+        <span>어떤 커리어 방향을 지향하는가, 현재 이직을 고려하는 핵심 배경은 무엇인가, 회사 선택 기준은 무엇인가, 입사 후 기대하는 역할과 경험은 무엇인가, 중요하게 여기는 일의 방식과 조직 환경은 무엇인가 등</span>
       </div>
     </div>
     <div class="qa-container">
@@ -344,15 +344,15 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: #222
     <div class="fit-header">
       <div class="fit-name">03. 업무 성향 및 커뮤니케이션 스타일</div>
       <div class="rating-group">
-        <button type="button" class="btn-rating" onclick="selectRating(this, '탁월')">탁월</button>
-        <button type="button" class="btn-rating" onclick="selectRating(this, '충족')">충족</button>
-        <button type="button" class="btn-rating" onclick="selectRating(this, '미흡')">미흡</button>
+        <button type="button" class="btn-rating" onclick="selectRating(this, '기대 이상')">기대 이상</button>
+        <button type="button" class="btn-rating" onclick="selectRating(this, '기대 충족')">기대 충족</button>
+        <button type="button" class="btn-rating" onclick="selectRating(this, '기대 미만')">기대 미만</button>
       </div>
     </div>
     <div class="reference-area">
       <div class="ref-pill">
         <span class="badge-ref badge-criteria">평가 기준</span>
-        <span>업무 추진 및 조율 방식, 업무 리포팅 습관 및 갈등 해결 방법과 같은 다양한 실무적 소통 역량</span>
+        <span>우선순위 설정 방식은 어떠한가, 협업 과정에서 주로 어떤 역할을 맡는가, 스스로 동기부여하는 방식은 무엇인가, 변화/불확실성/압박 상황에서 어떤 반응 패턴을 지녔는가 등</span>
       </div>
     </div>
     <div class="qa-container">
@@ -364,26 +364,26 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: #222
   </div> </section>
 
   <section class="section">
-    <h2 class="section-title">조직 적합성 평가</h2>
+    <h2 class="section-title">조직 적합성</h2>
     <p class="section-desc">상상인그룹의 Core Value 3개와 Winning Rules 9개를 기준으로 지원자를 평가합니다.
-<br><font color= #1976d2;>※ 답변 기록은 "지원자가 어떤 상황에서 어떻게 문제를 인식했고, 어떤 행동을 했으며, 그 결과와 배운 점 등은 무엇인지를 중심"으로 기록합니다.</p></font color= #1976d2;>
+<br><font color= #1976d2;>※ 지원자 답변은 "어떤 상황에서 어떻게 문제를 인식했고, 어떤 행동을 했으며, 그 결과와 배운 점 등은 무엇인지를 중심"으로 기록합니다.</p></font color= #1976d2;>
 
     <div class="fit-item">
       <div class="fit-header">
         <div class="fit-name">01. 도전</div>
         <div class="rating-group">
-          <button type="button" class="btn-rating" onclick="selectRating(this, '탁월')">탁월</button>
-          <button type="button" class="btn-rating" onclick="selectRating(this, '충족')">충족</button>
-          <button type="button" class="btn-rating" onclick="selectRating(this, '미흡')">미흡</button>
+          <button type="button" class="btn-rating" onclick="selectRating(this, '기대 이상')">기대 이상</button>
+          <button type="button" class="btn-rating" onclick="selectRating(this, '기대 충족')">기대 충족</button>
+          <button type="button" class="btn-rating" onclick="selectRating(this, '기대 미만')">기대 미만</button>
         </div>
       </div>
       <div class="reference-area">
         <div class="ref-pill"><span class="badge-ref badge-criteria">평가 기준</span><span>새로운 환경 수용성, 자발적 행동력, 끊임없는 시도, 열정적 학습 태도</span></div>
-        <div class="ref-pill"><span class="badge-ref badge-question">추천 질문</span><span>아무도 문제라고 생각하지 않았는데 본인은 그냥 지나칠 수 없었던 일이 있었는지? / 완성도와 속도 중에 하나를 선택했던 경험은?</span></div>
+        <div class="ref-pill"><span class="badge-ref badge-question">추천 질문</span><span>아무도 문제라고 생각하지 않았는데 본인은 지나칠 수 없었던 일이 있었다면? / 완성도와 속도 중에 하나를 선택했던 경험은? / 업무 재검토보다 속도를 더 우선했던 순간? / 새로운 지식이나 기술을 학습해서 업무에 적용한 경험은?</span></div>
       </div>
       <div class="qa-container">
-        <div class="qa-row"><span class="badge-qa badge-q">질문</span><input type="text" class="input" placeholder="실제 던진 질문 기록"></div>
-        <div class="qa-row"><span class="badge-qa badge-a">답변</span><textarea class="textarea" style="min-height:90px;" placeholder="지원자의 답변 핵심 내용 기록"></textarea></div>
+        <div class="qa-row"><span class="badge-qa badge-q">질문</span><input type="text" class="input" placeholder="면접관이 실제로 던진 질문 기록"></div>
+        <div class="qa-row"><span class="badge-qa badge-a">답변 및 평가</span><textarea class="textarea" style="min-height:90px;" placeholder="지원자 답변, 이에 대한 면접관의 의견"></textarea></div>
       </div>
     </div>
 
@@ -391,18 +391,18 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: #222
       <div class="fit-header">
         <div class="fit-name">02. 연결</div>
         <div class="rating-group">
-          <button type="button" class="btn-rating" onclick="selectRating(this, '탁월')">탁월</button>
-          <button type="button" class="btn-rating" onclick="selectRating(this, '충족')">충족</button>
-          <button type="button" class="btn-rating" onclick="selectRating(this, '미흡')">미흡</button>
+          <button type="button" class="btn-rating" onclick="selectRating(this, '기대 이상')">기대 이상</button>
+          <button type="button" class="btn-rating" onclick="selectRating(this, '기대 충족')">기대 충족</button>
+          <button type="button" class="btn-rating" onclick="selectRating(this, '기대 미만')">기대 미만</button>
         </div>
       </div>
       <div class="reference-area">
         <div class="ref-pill"><span class="badge-ref badge-criteria">평가 기준</span><span>타 부서·동료와의 협업 경험, 조직 전체 관점에서의 사고, 외부에 대한 수용력</span></div>
-        <div class="ref-pill"><span class="badge-ref badge-question">추천 질문</span><span>팀의 방향과 회사의 방향이 충돌했던 경험은? / 부서 간 이해관계가 충돌했던 경험은?</span></div>
+        <div class="ref-pill"><span class="badge-ref badge-question">추천 질문</span><span>외부 사례나 새로운 아이디어를 조직에 적용한 경험은? / 팀의 방향과 회사의 방향이 충돌했던 경험은? / 부서 간 이해관계가 충돌했던 경험은? / 본인 아이디어보다 더 좋은 의견이 나왔던 경험은?</span></div>
       </div>
       <div class="qa-container">
-        <div class="qa-row"><span class="badge-qa badge-q">질문</span><input type="text" class="input" placeholder="실제 던진 질문 기록"></div>
-        <div class="qa-row"><span class="badge-qa badge-a">답변</span><textarea class="textarea" style="min-height:90px;" placeholder="지원자의 답변 핵심 내용 기록"></textarea></div>
+        <div class="qa-row"><span class="badge-qa badge-q">질문</span><input type="text" class="input" placeholder="면접관이 실제로 던진 질문 기록"></div>
+        <div class="qa-row"><span class="badge-qa badge-a">답변 및 평가</span><textarea class="textarea" style="min-height:90px;" placeholder="지원자 답변, 이에 대한 면접관의 의견"></textarea></div>
       </div>
     </div>
 
@@ -410,18 +410,18 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: #222
       <div class="fit-header">
         <div class="fit-name">03. 존중</div>
         <div class="rating-group">
-          <button type="button" class="btn-rating" onclick="selectRating(this, '탁월')">탁월</button>
-          <button type="button" class="btn-rating" onclick="selectRating(this, '충족')">충족</button>
-          <button type="button" class="btn-rating" onclick="selectRating(this, '미흡')">미흡</button>
+          <button type="button" class="btn-rating" onclick="selectRating(this, '기대 이상')">기대 이상</button>
+          <button type="button" class="btn-rating" onclick="selectRating(this, '기대 충족')">기대 충족</button>
+          <button type="button" class="btn-rating" onclick="selectRating(this, '기대 미만')">기대 미만</button>
         </div>
       </div>
       <div class="reference-area">
         <div class="ref-pill"><span class="badge-ref badge-criteria">평가 기준</span><span>피드백 수용 태도, 갈등 대응 방식, 반대 의견 전달 방식, 자신의 오류 인정 태도</span></div>
-        <div class="ref-pill"><span class="badge-ref badge-question">추천 질문</span><span>갈등 상황에서 본인의 소통 방식은? / 본인이 틀렸다는 걸 인정하기 가장 어려웠던 경험은?</span></div>
+        <div class="ref-pill"><span class="badge-ref badge-question">추천 질문</span><span>갈등이나 의견 충돌 상황에서 본인의 소통 방식은? / 나와 다른 의견이나 관점을 가진 사람과 일했던 경험은? / 본인이 틀렸다는 걸 인정하기 가장 어려웠던 경험은?</span></div>
       </div>
       <div class="qa-container">
-        <div class="qa-row"><span class="badge-qa badge-q">질문</span><input type="text" class="input" placeholder="실제 던진 질문 기록"></div>
-        <div class="qa-row"><span class="badge-qa badge-a">답변</span><textarea class="textarea" style="min-height:90px;" placeholder="지원자의 답변 핵심 내용 기록"></textarea></div>
+        <div class="qa-row"><span class="badge-qa badge-q">질문</span><input type="text" class="input" placeholder="면접관이 실제로 던진 질문 기록"></div>
+        <div class="qa-row"><span class="badge-qa badge-a">답변 및 평가</span><textarea class="textarea" style="min-height:90px;" placeholder="지원자 답변, 이에 대한 면접관의 의견"></textarea></div>
       </div>
     </div>
   </section>
@@ -447,27 +447,31 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: #222
 
 
   <section class="section" style="border: 2px solid var(--primary);">
-    <h2 class="section-title">최종 평가</h2>
+    <h2 class="section-title">최종 의견</h2>
     
     <div class="decision-group" id="decisionGroup">
-      <button type="button" class="btn-decision" data-type="recommend" onclick="setDecision('recommend')">추천</button>
-      <button type="button" class="btn-decision" data-type="hold" onclick="setDecision('hold')">보류</button>
-      <button type="button" class="btn-decision" data-type="reject" onclick="setDecision('reject')">비추천</button>
+      <button type="button" class="btn-decision" data-type="recommend" onclick="setDecision('recommend')">채용 추천</button>
+      <button type="button" class="btn-decision" data-type="hold" onclick="setDecision('hold')">채용 보류</button>
+      <button type="button" class="btn-decision" data-type="reject" onclick="setDecision('reject')">채용 비추천</button>
       <input type="hidden" id="finalDecision" value="">
     </div>
 
     <div class="qa-container">
       <div class="input-group">
-        <label class="label">채용 사유</label>
-        <textarea class="textarea" style="min-height:80px;" placeholder="예 : 지원자가 포지션에 적합한 핵심 이유, 지원자만의 강점 등"></textarea>
+        <label class="label">핵심 강점</label>
+        <textarea class="textarea" style="min-height:80px;" placeholder="지원자가 포지션에 적합한 핵심 이유, 지원자만의 차별화되는 부분/강점 등"></textarea>
+      </div>
+ <div class="input-group">
+        <label class="label">기대 역할</label>
+        <textarea class="textarea" style="min-height:80px;" placeholder="입사 시에 가장 빠르게 기여 가능한 영역, 가장 기대되는 기여 가능한 영역, 장기적 활용성 등"></textarea>
       </div>
       <div class="input-group">
         <label class="label">우려 사항</label>
-        <textarea class="textarea" style="min-height:80px;" placeholder="예 : 지원자가 보유한 리스크, 다음 인터뷰에서 추가 확인 또는 재확인하고 싶은 점 등"></textarea>
+        <textarea class="textarea" style="min-height:80px;" placeholder="온보딩/조직 적응/기대역할 측면에서 지원자가 보유한 리스크, 추가 확인 또는 재확인하고 싶은 점 등"></textarea>
       </div>
       <div class="input-group">
-        <label class="label">종합 평가</label>
-        <textarea class="textarea" style="min-height:100px; font-weight:500;" placeholder="지원자에 대한 총평"></textarea>
+        <label class="label">종합 의견</label>
+        <textarea class="textarea" style="min-height:100px; font-weight:500;" placeholder=""></textarea>
       </div>
     </div>
   </section>
@@ -489,9 +493,9 @@ function selectRating(button, value) {
   });
 
   button.classList.add('active');
-  if (value === '탁월') button.classList.add('excellent');
-  else if (value === '충족') button.classList.add('good');
-  else if (value === '미흡') button.classList.add('poor');
+  if (value === '기대 이상') button.classList.add('excellent');
+  else if (value === '기대 충족') button.classList.add('good');
+  else if (value === '기대 미만') button.classList.add('poor');
   
   save(); 
 }
@@ -547,7 +551,7 @@ function validateAndPrint() {
     checkboxBox.style.borderColor = 'var(--line)';
   }
 
-  // 3. 등급 선택 확인 (탁월/충족/미흡)
+  // 3. 등급 선택 확인 (기대 이상/기대 충족/기대 미만)
   const ratingGroups = document.querySelectorAll('.rating-group');
   ratingGroups.forEach(group => {
     if (!group.querySelector('.btn-rating.active')) {
@@ -625,9 +629,9 @@ function load() {
         const btn = Array.from(group.querySelectorAll('.btn-rating')).find(b => b.innerText === val);
         if (btn) {
           btn.classList.add('active');
-          if (val === '탁월') btn.classList.add('excellent');
-          else if (val === '충족') btn.classList.add('good');
-          else if (val === '미흡') btn.classList.add('poor');
+          if (val === '기대 이상') btn.classList.add('excellent');
+          else if (val === '기대 충족') btn.classList.add('good');
+          else if (val === '기대 미만') btn.classList.add('poor');
         }
       }
     });
